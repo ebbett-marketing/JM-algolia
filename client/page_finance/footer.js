@@ -33,7 +33,7 @@ $(document).ready(function() {
                 if ($(this).text().trim() === selectedValue) {
                     var altDealerParam = $(this).siblings('[data-select2="alt-dealer-param"]').text().trim();
                     var dealerParam = altDealerParam || $(this).text().trim();
-                    var usedCarUrl = 'https://www.ebbett.co.nz/stock/all?dealership=' + dealerParam + '&condition=Used,Demo';
+                    var usedCarUrl = '/stock/all?dealership=' + dealerParam + '&condition=Used,Demo';
                     $usedCarButton.attr('href', usedCarUrl);
                     
                     // Reset button styling

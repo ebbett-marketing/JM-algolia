@@ -1,5 +1,7 @@
 // --- 1. UPLOADER CONFIGURATION ---
 // This initializes the uploader service.
+// JM: still Ebbett's Bytescale (upload.io) account and /ebbett.co.nz/ folder below.
+// Valuation and trade-in photo uploads are Ebbett Group's call (open, Nov 2026).
 try {
   $.uploader.init({
     apiKey: "public_W142i2G27rvDuqs2EeqkBiKNyYg3"

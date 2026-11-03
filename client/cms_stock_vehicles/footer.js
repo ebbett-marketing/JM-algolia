@@ -174,29 +174,6 @@ function updateFinanceLinks() {
 }
 
 
-/* function fetchViewCount() {
-    const containers = document.querySelectorAll('[data-product-view]');
-
-    containers.forEach(container => {
-        const listingElement = document.querySelector('[data-listing-id][data-wf-sku-bindings]');
-        const listingId = listingElement ? listingElement.innerHTML.trim() : null;
-
-        if (listingId) {
-            fetch(`https://ebbett-api-v2.ebbettit.nz/website/view_count/${listingId}`)
-                .then(response => response.json())
-                .then(count => {
-                    container.textContent = `Vehicle viewed ${count} times`;
-                })
-                .catch(error => {
-                    console.error('Error fetching view count:', error);
-                });
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', fetchViewCount); */
-
-
 // === Splide slider ===
 
 function slider1() {
@@ -249,11 +226,12 @@ $(function() {
 
 // === PhotoSwipe lightbox ===
 
-import('https://client.ebbett.co.nz/lib_photoswipe/latest/photoswipe-lightbox.esm.min.js').then(({ default: PhotoSwipeLightbox }) => {
+// PhotoSwipe straight from npm (Ebbett served an unmodified copy of 5.4.4).
+import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js').then(({ default: PhotoSwipeLightbox }) => {
     const lightbox = new PhotoSwipeLightbox({
         gallery: '#product-gallery',
         children: 'a',
-        pswpModule: () => import('https://client.ebbett.co.nz/lib_photoswipe/latest/photoswipe.esm.min.js')
+        pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
     });
 
     lightbox.addFilter('numItems', () => window.__CMS__.productImageNum);

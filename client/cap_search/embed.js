@@ -1,8 +1,7 @@
-// cap_search — entry point. One script tag site-wide (registered inline
-// script `searchembeddev`, footer, all pages):
-//   <script type="module" src="https://client.ebbett.co.nz/cap_search/dev/embed.js"></script>
+// cap_search — entry point. One script tag site-wide (site footer, all pages):
+//   <script type="module" src="https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@<version>/client/cap_search/embed.js"></script>
 //
-// Mounts (scaffold.html is the markup contract):
+// Mounts (markup contract: scaffold.html in ebbett-core-edge cap_search):
 //   - nav trigger  <div data-wd-search-trigger>            (navbar component)
 //   - overlay      <section data-wd-search-overlay>        (navbar component)
 //   - /search page <div data-wd-search-page>               (/search page only)
@@ -15,21 +14,17 @@
 // Config overrides via window.WD_SEARCH_CONFIG — the harness passes a stub
 // `searchClient` here so Tier 1 tests never touch the network.
 
+import { ALGOLIA, INDICES } from '../config.js';
+
 const DEFAULTS = {
-  // public search-only credentials — same pair committed in cms_stock/search.js
-  appId: 'G2Y7I1BLJW',
-  searchKey: 'e54bd7c6bd9b6c2df13fe6615eca943d',
+  // public search-only credentials (client/config.js)
+  appId: ALGOLIA.appId,
+  searchKey: ALGOLIA.searchKey,
   // lazy-injected UMD; skipped entirely when `searchClient` is stubbed
   algoliaCdn: 'https://cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js',
   searchClient: null, // harness stub hook
-  indices: {
-    stock: 'stock', // Adam's, read-only
-    models: 'models_dev', // ours — n8n Model Sync c0jOiInHZ5o67ad6 from the 3.0 CMS (`models` is fed from the old site)
-    offers: 'offers_staging',
-    news: 'news_staging',
-    dealerships: 'dealerships_staging',
-    pages: 'pages_staging', // ours (n8n crawler yrVMp6kOuHAuxXRk); Adam's ebbett_website_pages test index was deleted 2026-08-05
-  },
+  // stock + pages only on JM; categories without an index are not searched
+  indices: { ...INDICES },
   // Webflow reserves /search for its native site search — the results page
   // lives at /site-search (slug renamed 2026-08-03)
   searchPath: '/site-search',

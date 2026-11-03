@@ -25,7 +25,7 @@ import {
   normaliseTransmission,
   formatEngineCasing,
   fuelConsumptionDisplay,
-} from '/lib_algolia/dev/core/specs.js';
+} from '../../lib_algolia/core/specs.js';
 
 // Short display codes for the Engine row ("1.6L AWD"), from the canonical vocab.
 const DRIVETRAIN_SHORT = {

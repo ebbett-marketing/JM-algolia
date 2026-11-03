@@ -13,16 +13,7 @@
 (function () {
   'use strict';
 
-  // --- dev loader override (ships in _v dev builds only, never in v*) ------
   var currentScript = document.currentScript;
-  var devHost = null;
-  try { devHost = localStorage.getItem('webdune_dev'); } catch (e) { /* storage blocked */ }
-  if (devHost && currentScript && currentScript.src.indexOf(devHost) !== 0) {
-    var devScript = document.createElement('script');
-    devScript.src = devHost.replace(/\/+$/, '') + '/dropdown.js';
-    document.body.appendChild(devScript);
-    return; // the locally-served copy takes over
-  }
 
   // EM-70 (2026-09-03): the nav's Contact modal select joins the set. Its
   // options come from the same hidden dealership list the Service modal uses

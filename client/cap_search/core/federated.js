@@ -84,13 +84,18 @@ function pagesHygiene(hits) {
  */
 export async function runSearch(client, query, opts = {}) {
   const categories = opts.categories || CATEGORIES;
-  const requests = buildRequests(query, opts);
-  const res = await client.search(requests);
+  // JM: only categories with an index in config.indices are queried (stock and
+  // pages); a missing index would fail the whole multi-index request.
+  const indices = opts.indices || {};
+  const searched = categories.filter((category) => indices[category]);
+  const requests = searched.length ? buildRequests(query, { ...opts, categories: searched }) : [];
+  const res = requests.length ? await client.search(requests) : null;
   const results = (res && res.results) || [];
 
   const out = {};
-  categories.forEach((category, i) => {
-    const r = results[i] || {};
+  categories.forEach((category) => {
+    const i = searched.indexOf(category);
+    const r = (i >= 0 && results[i]) || {};
     let hits = r.hits || [];
     let nbHits = typeof r.nbHits === 'number' ? r.nbHits : hits.length;
     if (category === 'pages') {

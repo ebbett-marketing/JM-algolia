@@ -7,12 +7,28 @@ stock search, comparison and navigation search. Adapted from the Ebbett 3.0 site
 
 | Path | What it is |
 |---|---|
+| `client/` | The site's scripts and styles, one folder per module, served via jsDelivr |
+| `client/config.js` | JM's settings for those scripts: Algolia app, search key, indices, domains |
+| `client/UPSTREAM.md` | Where each module came from and which pages load it |
 | `crawler/stock.config.js` | Algolia Crawler config for the `stock` index (dashboard-editor format) |
 | `algolia/stock.settings.json` | `stock` index settings, including its 10 sort replicas |
 | `algolia/stock.replicas.json` | Sort order for each replica |
+| `algolia/pages.settings.json` | `pages` index settings (site pages in the nav search) |
 | `tools/test-extractor.mjs` | Runs the crawler's record extractor against the live site, no Algolia needed |
 | `tools/crawler.mjs` | Pushes the crawler config, starts a crawl, shows status |
 | `tools/algolia-settings.mjs` | Applies (or `--check`s) the index settings |
+| `tools/purge-jsdelivr.mjs` | Clears jsDelivr's cache of `main` after a push |
+
+## How the site loads the scripts
+
+Webflow's custom code and embeds point at jsDelivr, which serves files straight from this repo:
+
+```
+https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@main/client/cap_search/embed.js
+```
+
+Staging uses `@main`. jsDelivr caches a branch for up to 12 hours, so run `node tools/purge-jsdelivr.mjs`
+after each push. The live site uses a tagged release (`@v1.0.0`), which never changes once published.
 
 ## How stock gets into search
 
@@ -45,4 +61,5 @@ npm run test:extractor                         # check every vehicle page extrac
 node tools/crawler.mjs push <crawlerId>        # after editing crawler/stock.config.js
 node tools/crawler.mjs reindex <crawlerId>     # crawl now instead of waiting for the daily run
 node tools/algolia-settings.mjs --check        # live index settings vs the JSON files
+node tools/purge-jsdelivr.mjs                  # after pushing to main, so staging gets the change
 ```

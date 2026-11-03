@@ -1,8 +1,10 @@
-// Applies algolia/stock.settings.json (primary `stock` index, incl. its virtual sort replicas)
-// and algolia/stock.replicas.json (each replica's sort order) to the JM Algolia app.
+// Applies algolia/stock.settings.json (primary `stock` index, incl. its virtual sort replicas),
+// algolia/stock.replicas.json (each replica's sort order) and algolia/pages.settings.json (the
+// nav search's site pages) to the JM Algolia app.
 //
-//   node tools/algolia-settings.mjs          apply
-//   node tools/algolia-settings.mjs --check  compare live settings with the files, change nothing
+//   node tools/algolia-settings.mjs                apply
+//   node tools/algolia-settings.mjs --check        compare live settings with the files, change nothing
+//   node tools/algolia-settings.mjs --only pages   either of the above, for one index
 //
 // The settings were copied from Ebbett's tuned `stock` index (Oct 2026). Needs
 // JOHNSTON_ALGOLIA_APP_ID + JOHNSTON_ALGOLIA_ADMIN_API_KEY (environment or ../.env.local).
@@ -20,6 +22,8 @@ const APP = process.env.JOHNSTON_ALGOLIA_APP_ID;
 const KEY = process.env.JOHNSTON_ALGOLIA_ADMIN_API_KEY;
 if (!APP || !KEY) throw new Error('Missing JOHNSTON_ALGOLIA_APP_ID / JOHNSTON_ALGOLIA_ADMIN_API_KEY');
 const check = process.argv.includes('--check');
+const onlyAt = process.argv.indexOf('--only');
+const only = onlyAt > -1 ? process.argv[onlyAt + 1] : null;
 
 async function algolia(method, path, body) {
   const res = await fetch(`https://${APP}.algolia.net/1${path}`, {
@@ -45,9 +49,11 @@ const waitTask = async (index, taskID) => {
 const load = async (f) => JSON.parse(await readFile(new URL(`../algolia/${f}`, import.meta.url), 'utf8'));
 const primary = await load('stock.settings.json');
 const replicas = await load('stock.replicas.json');
-const targets = [['stock', primary], ...Object.entries(replicas)];
+const pages = await load('pages.settings.json');
+const targets = [['stock', primary], ...Object.entries(replicas), ['pages', pages]];
 
 for (const [index, wanted] of targets) {
+  if (only && index !== only) continue;
   if (check) {
     const live = await algolia('GET', `/indexes/${index}/settings`);
     // Algolia hands back the synonym groups in its own order.

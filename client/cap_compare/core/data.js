@@ -2,18 +2,20 @@
 // ever issue object-lookup and query requests. No write/settings/Insights calls.
 // Tier 1 tests run hermetically via config.stubRecords (no network).
 
+import { isSiteHost } from '../../config.js';
+
 const ACTIVE = 'Active';
 
-// Record URLs are absolute old-live /product/ links; on-site hrefs must be
-// host-relative and the Ebbett 3.0 vehicle template lives at /inventory/
-// (EM-184 / EM-122; see lib_algolia core/urls.js). Normalised once here so
-// every consumer (compare page fills, tray prime, in-stock cards) inherits it.
+// On-site hrefs must be host-relative (JM's hosts: client/config.js) and the
+// vehicle template lives at /inventory/ (EM-184 / EM-122; see lib_algolia
+// core/urls.js). Normalised once here so every consumer (compare page fills,
+// tray prime, in-stock cards) inherits it.
 function listingUrl(url) {
   if (!url) return url;
   let out = url;
   try {
     const u = new URL(url);
-    if (/(^|\.)ebbett\.co\.nz$/.test(u.hostname)) out = u.pathname + u.search;
+    if (isSiteHost(u.hostname)) out = u.pathname + u.search;
     else return url;
   } catch {
     out = String(url);

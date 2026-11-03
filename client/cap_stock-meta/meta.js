@@ -11,14 +11,16 @@
 // Nothing is authored in Webflow for this module — no markup exists until a
 // record is found, so a miss leaves the page byte-identical to before.
 //
-// Load (Webflow product template custom code):
-//   <link rel="stylesheet" href="https://client.ebbett.co.nz/cap_stock-meta/dev/meta.css">
-//   <script type="module" src="https://client.ebbett.co.nz/cap_stock-meta/dev/meta.js"></script>
+// Load (Webflow vehicle template custom code):
+//   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@<version>/client/cap_stock-meta/meta.css">
+//   <script type="module" src="https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@<version>/client/cap_stock-meta/meta.js"></script>
+
+import { ALGOLIA, INDICES } from '../config.js';
 
 export const DEFAULT_META_CONFIG = {
-  appId: 'G2Y7I1BLJW',
-  searchKey: 'e54bd7c6bd9b6c2df13fe6615eca943d', // search-only key — public by design
-  indexName: 'stock',
+  appId: ALGOLIA.appId,
+  searchKey: ALGOLIA.searchKey, // search-only key — public by design (client/config.js)
+  indexName: INDICES.stock,
   headerSelector: '.stock_detail-header',
   activeOnly: true, // sold pages already carry a SOLD banner; meta would be noise
   viewsDisplayFloor: 1, // show any view count (Su-Anne 2026-10-07); 0 stays hidden (matches card)

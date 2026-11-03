@@ -1,20 +1,22 @@
-// _v1.0.1 imports from /lib_algolia/dev/ — flip back to /latest/ at promotion.
-import { waitForInstantSearch } from '/lib_algolia/dev/core/wait-for-instantsearch.js';
-import { encodeValue, decodeValue, safeJSONParse } from '/lib_algolia/dev/core/url-codec.js';
-import { createDropdown } from '/lib_algolia/dev/widgets/dropdown.js';
-import { createPriceRangeWidget } from '/lib_algolia/dev/widgets/price-range.js';
-import { createYearRangeWidget } from '/lib_algolia/dev/widgets/year-range.js';
-import { createOdometerRangeWidget } from '/lib_algolia/dev/widgets/odometer-range.js';
-import { createWeeklyRangeWidget, WEEKLY_CONFIG } from '/lib_algolia/dev/widgets/weekly-range.js';
-import { createFilterCheckboxWidget } from '/lib_algolia/dev/widgets/checkbox-filter.js';
-import { getValidFacetKeys } from '/lib_algolia/dev/widgets/valid-params.js';
-import { decorateCard, updateTagStripExpansion, DEFAULT_TAG_CONFIG } from '/lib_algolia/dev/widgets/stock-tags.js';
-import { createQuickFilters, parsePresetsFromDOM, DEFAULT_QUICK_FILTERS } from '/lib_algolia/dev/widgets/quick-filters.js';
-import { drivetrainFacetLabel, normaliseTransmission } from '/lib_algolia/dev/core/specs.js';
-import { transformCurrentRefinementItems } from '/lib_algolia/dev/core/chip-labels.js';
-import { listingUrl } from '/lib_algolia/dev/core/urls.js';
-import { createStarFilterWidget } from '/lib_algolia/dev/widgets/star-filter.js';
-import { createEnginePowerWidget, createEnginePowerSlider, fetchEnginePowerMap, ENGINE_POWER_CONFIG } from '/lib_algolia/dev/widgets/engine-power-range.js';
+// JM: Algolia app, key and Insights setting from client/config.js. The stock
+// index and its sort replicas keep Ebbett's names (stock, stock_price_asc, …).
+import { ALGOLIA, INDICES, INSIGHTS } from '../config.js';
+import { waitForInstantSearch } from '../lib_algolia/core/wait-for-instantsearch.js';
+import { encodeValue, decodeValue, safeJSONParse } from '../lib_algolia/core/url-codec.js';
+import { createDropdown } from '../lib_algolia/widgets/dropdown.js';
+import { createPriceRangeWidget } from '../lib_algolia/widgets/price-range.js';
+import { createYearRangeWidget } from '../lib_algolia/widgets/year-range.js';
+import { createOdometerRangeWidget } from '../lib_algolia/widgets/odometer-range.js';
+import { createWeeklyRangeWidget, WEEKLY_CONFIG } from '../lib_algolia/widgets/weekly-range.js';
+import { createFilterCheckboxWidget } from '../lib_algolia/widgets/checkbox-filter.js';
+import { getValidFacetKeys } from '../lib_algolia/widgets/valid-params.js';
+import { decorateCard, updateTagStripExpansion, DEFAULT_TAG_CONFIG } from '../lib_algolia/widgets/stock-tags.js';
+import { createQuickFilters, parsePresetsFromDOM, DEFAULT_QUICK_FILTERS } from '../lib_algolia/widgets/quick-filters.js';
+import { drivetrainFacetLabel, normaliseTransmission } from '../lib_algolia/core/specs.js';
+import { transformCurrentRefinementItems } from '../lib_algolia/core/chip-labels.js';
+import { listingUrl } from '../lib_algolia/core/urls.js';
+import { createStarFilterWidget } from '../lib_algolia/widgets/star-filter.js';
+import { createEnginePowerWidget, createEnginePowerSlider, fetchEnginePowerMap, ENGINE_POWER_CONFIG } from '../lib_algolia/widgets/engine-power-range.js';
 
 rewriteBrandToMake();
 
@@ -410,14 +412,11 @@ const routeToState = (routeState) => {
     }
 };
 
-const searchClient = algoliasearch(
-    'G2Y7I1BLJW',
-    'e54bd7c6bd9b6c2df13fe6615eca943d'
-);
+const searchClient = algoliasearch(ALGOLIA.appId, ALGOLIA.searchKey);
 
 const search = instantsearch({
     searchClient,
-    indexName: "stock",
+    indexName: INDICES.stock,
     routing: {
         router: instantsearch.routers.history(),
         stateMapping: {
@@ -425,7 +424,7 @@ const search = instantsearch({
             routeToState
         }
     },
-    insights: true
+    insights: INSIGHTS
 });
 
 search.once('render', () => {

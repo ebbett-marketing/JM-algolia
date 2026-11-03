@@ -1,17 +1,18 @@
 // lib_algolia — stock listing URL normaliser (EM-184 / EM-122 launch fix).
 //
-// Stock records are synced with absolute old-live URLs
-// (https://www.ebbett.co.nz/product/<slug>), but on-site links must be
-// host-relative (so dev.ebbett.co.nz navigation never jumps hosts — the
-// cms_browse relUrl precedent) AND the vehicle template lives at /inventory/
-// on Ebbett 3.0 (/product/ 404s there). Off-site URLs pass through untouched.
-// Remove the /product/ remap once the stock sync writes /inventory/ URLs.
+// On-site links must be host-relative, so staging navigation never jumps to the
+// live domain. JM's crawler already stores paths (/inventory/<slug>), which pass
+// through; absolute URLs on JM's hosts (client/config.js) are cut to paths, and
+// off-site URLs pass through untouched. The /product/ → /inventory/ remap is
+// kept from Ebbett's copy, where old records still carried /product/.
+import { isSiteHost } from '../../config.js';
+
 export function listingUrl(url) {
   if (!url) return '#';
   let out = url;
   try {
     const u = new URL(url);
-    if (/(^|\.)ebbett\.co\.nz$/.test(u.hostname)) out = u.pathname + u.search;
+    if (isSiteHost(u.hostname)) out = u.pathname + u.search;
     else return url;
   } catch {
     out = String(url);

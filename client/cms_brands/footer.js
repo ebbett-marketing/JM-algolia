@@ -198,7 +198,7 @@ items.forEach(item => {
 
 document.querySelectorAll('[data-external-link-check] a').forEach(link => {
   const url = new URL(link.href);
-  if (!url.hostname.endsWith('ebbett.co.nz')) {
+  if (url.hostname !== location.hostname) {
       link.target = '_blank';
   }
 });

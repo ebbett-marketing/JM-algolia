@@ -10,6 +10,8 @@
 // never special-case. Index strings are NEVER trusted: renderers fill via
 // textContent/setAttribute, and esc() is exported for any innerHTML path.
 
+import { isSiteHost } from '../../config.js';
+
 /** Display labels, keyed by category (fixed vocabulary, BRIEF §D). */
 export const LABELS = {
   stock: 'Vehicle stock',
@@ -26,14 +28,14 @@ export const esc = (s) =>
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
 
-// Records carry absolute www.ebbett.co.nz URLs; on-site links must stay
-// relative so dev.ebbett.co.nz navigation does not jump hosts (cms_browse
-// precedent). External/OEM URLs pass through untouched.
+// Absolute URLs on JM's own hosts (client/config.js) become on-site paths, so
+// staging navigation never jumps to the live domain. Stock records already
+// carry paths, which pass through. External/OEM URLs pass through untouched.
 export function relUrl(url) {
   if (!url) return '#';
   try {
     const u = new URL(url);
-    if (/(^|\.)ebbett\.co\.nz$/.test(u.hostname)) return u.pathname + u.search;
+    if (isSiteHost(u.hostname)) return u.pathname + u.search;
     return url;
   } catch {
     return url;

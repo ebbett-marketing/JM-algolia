@@ -34,13 +34,10 @@ const FIELDS = {
 
 const VIEWS_DISPLAY_FLOOR = 1; // show any view count (Su-Anne 2026-10-07); 0 stays hidden
 
-// Resolved against THIS module's URL, so the lib always comes from wherever
-// cap_search itself is served (client.ebbett.co.nz on dev, the harness root
-// locally) — explicit about what a root-relative dynamic import already did.
-// The go-live promotion flips /dev/ to /latest/ in both URLs, exactly like
-// cms_stock's lib imports.
-const TAG_LIB_URL = new URL('../../../lib_algolia/dev/widgets/stock-tags.js', import.meta.url).href;
-const TAGS_CSS_URL = new URL('../../../lib_algolia/dev/tags.css', import.meta.url).href;
+// Resolved against THIS module's URL, so the lib always comes from the same
+// release of this repo as cap_search itself.
+const TAG_LIB_URL = new URL('../../lib_algolia/widgets/stock-tags.js', import.meta.url).href;
+const TAGS_CSS_URL = new URL('../../lib_algolia/tags.css', import.meta.url).href;
 
 // lib_algolia's tags.css carries the tag strip's ENTIRE visibility contract
 // (.wd-stock-tags display:flex/position, [ais-tag]:not(.is-active) hiding,

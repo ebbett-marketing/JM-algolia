@@ -100,7 +100,7 @@ items.forEach(item => {
 
 document.querySelectorAll('[data-external-link-check] a').forEach(link => {
   const url = new URL(link.href);
-  if (!url.hostname.endsWith('ebbett.co.nz')) {
+  if (url.hostname !== location.hostname) {
       link.target = '_blank';
   }
 });
@@ -324,8 +324,11 @@ function handleLanguageIcons() {
     });
 }
 
+// languages.json sits next to this script in the JM repo.
+const LANGUAGES_URL = new URL('languages.json', document.currentScript.src).href;
+
 // Async initialization function
-async function loadLanguageData(jsonPath = 'https://files.ebbett.co.nz/scripts/ebbett.co.nz/languages.json') {
+async function loadLanguageData(jsonPath = LANGUAGES_URL) {
     try {
         console.log('Attempting to load language data from:', jsonPath);
         
