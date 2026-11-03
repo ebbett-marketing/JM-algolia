@@ -1,0 +1,1274 @@
+{
+    "languageData": [
+        {
+            "code": "ab",
+            "name": "Abkhazian",
+            "nativeName": "Аԥсуа бызшәа",
+            "style": {
+                "background": "#00AF51",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "aa",
+            "name": "Afar",
+            "nativeName": "Afar af",
+            "style": {
+                "background": "#4BB749",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "af",
+            "name": "Afrikaans",
+            "style": {
+                "background": "linear-gradient(135deg, #E03C31 25%, #007749 25% 50%, #001489  50% 75%, #FFB81C 75%)",
+                "color": "#ffffff",
+                "border": "1px solid #007A4D"
+            }
+        },
+        {
+            "code": "ak",
+            "name": "Akan",
+            "nativeName": "Akan kasa",
+            "style": {
+                "background": "#FFB300",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sq",
+            "name": "Albanian",
+            "nativeName": "Shqip",
+            "style": {
+                "background": "#E41E20",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "am",
+            "name": "Amharic",
+            "nativeName": "አማርኛ",
+            "style": {
+                "background": "linear-gradient(180deg, #078930 33%, #FCDD09 33% 67%, #DA121A 67%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ar",
+            "name": "Arabic",
+            "nativeName": "العربية",
+            "style": {
+                "background": "linear-gradient(135deg, #006C35 50%, #CE1126 50%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "an",
+            "name": "Aragonese",
+            "nativeName": "Aragonés",
+            "style": {
+                "background": "#FCDD09",
+                "color": "#DA121A"
+            }
+        },
+        {
+            "code": "hy",
+            "name": "Armenian",
+            "nativeName": "Հայերեն",
+            "style": {
+                "background": "linear-gradient(180deg, #D90012 33%, #0033A0 33% 67%, #F2A800 67%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "as",
+            "name": "Assamese",
+            "nativeName": "অসমীয়া",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "av",
+            "name": "Avaric",
+            "nativeName": "Авар мацӏ",
+            "style": {
+                "background": "#008751",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ae",
+            "name": "Avestan",
+            "nativeName": "Avesta",
+            "style": {
+                "background": "#239f40",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ay",
+            "name": "Aymara",
+            "nativeName": "Aymar aru",
+            "style": {
+                "background": "#EF3340",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "az",
+            "name": "Azerbaijani",
+            "nativeName": "Azərbaycan dili",
+            "style": {
+                "background": "linear-gradient(180deg, #00B5E2 33%, #EF3340 33% 67%, #509E2F 67%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bm",
+            "name": "Bambara",
+            "nativeName": "Bamanankan",
+            "style": {
+                "background": "#CE1126",
+                "color": "#FCD116"
+            }
+        },
+        {
+            "code": "ba",
+            "name": "Bashkir",
+            "nativeName": "Башҡорт теле",
+            "style": {
+                "background": "#0066B3",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "eu",
+            "name": "Basque",
+            "nativeName": "Euskara",
+            "style": {
+                "background": "#DC4437",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "be",
+            "name": "Belarusian",
+            "nativeName": "Беларуская мова",
+            "style": {
+                "background": "linear-gradient(135deg, #D22730 50%, #00AF51 50%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bn",
+            "name": "Bengali",
+            "nativeName": "বাংলা",
+            "style": {
+                "background": "#006A4E",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bi",
+            "name": "Bislama",
+            "nativeName": "Bislama",
+            "style": {
+                "background": "#009543",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bs",
+            "name": "Bosnian",
+            "nativeName": "Bosanski jezik",
+            "style": {
+                "background": "#002395",
+                "color": "#FECB00"
+            }
+        },
+        {
+            "code": "br",
+            "name": "Breton",
+            "nativeName": "Brezhoneg",
+            "style": {
+                "background": "#000000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bg",
+            "name": "Bulgarian",
+            "nativeName": "Български език",
+            "style": {
+                "background": "linear-gradient(180deg, #fff 33%, #00966E 33% 67%, #D62612 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "my",
+            "name": "Burmese",
+            "nativeName": "မြန်မာစာ",
+            "style": {
+                "background": "#FFCD00",
+                "color": "#35B32C"
+            }
+        },
+        {
+            "code": "ca",
+            "name": "Catalan",
+            "nativeName": "Català",
+            "style": {
+                "background": "#C60B1E",
+                "color": "#FFB81C"
+            }
+        },
+        {
+            "code": "ch",
+            "name": "Chamorro",
+            "nativeName": "Chamoru",
+            "style": {
+                "background": "#3B7BBF",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ce",
+            "name": "Chechen",
+            "nativeName": "Нохчийн мотт",
+            "style": {
+                "background": "#00AF51",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ny",
+            "name": "Chichewa",
+            "nativeName": "Chicheŵa",
+            "style": {
+                "background": "#000000",
+                "color": "#CE1126"
+            }
+        },
+        {
+            "code": "ct",
+            "name": "Cantonese",
+            "nativeName": "粵語",
+            "style": {
+                "background": "#0066A4",
+                "color": "#FFFFFF"
+            }
+        },
+        {
+            "code": "zh",
+            "name": "Chinese",
+            "nativeName": "中文",
+            "style": {
+                "background": "#DE2910",
+                "color": "#FFDE00"
+            }
+        },
+        {
+            "code": "cv",
+            "name": "Chuvash",
+            "nativeName": "Чӑваш чӗлхи",
+            "style": {
+                "background": "#FF1F1F",
+                "color": "#FFD700"
+            }
+        },
+        {
+            "code": "kw",
+            "name": "Cornish",
+            "nativeName": "Kernewek",
+            "style": {
+                "background": "#000000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "co",
+            "name": "Corsican",
+            "nativeName": "Corsu",
+            "style": {
+                "background": "#002395",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "cr",
+            "name": "Cree",
+            "nativeName": "ᓀᐦᐃᔭᐍᐏᐣ",
+            "style": {
+                "background": "#283375",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "hr",
+            "name": "Croatian",
+            "nativeName": "Hrvatski jezik",
+            "style": {
+                "background": "linear-gradient(180deg, #FF0000 33%, #FFFFFF 33% 67%, #0093DD 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "cs",
+            "name": "Czech",
+            "nativeName": "Čeština",
+            "style": {
+                "background": "linear-gradient(180deg, #FFFFFF 33%, #D7141A 33% 67%, #11457E 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "da",
+            "name": "Danish",
+            "nativeName": "Dansk",
+            "style": {
+                "background": "#C60C30",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "dv",
+            "name": "Divehi",
+            "nativeName": "ދިވެހި",
+            "style": {
+                "background": "#00843D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "nl",
+            "name": "Dutch",
+            "nativeName": "Nederlands",
+            "style": {
+                "background": "#AE1C28",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "dz",
+            "name": "Dzongkha",
+            "nativeName": "རྫོང་ཁ",
+            "style": {
+                "background": "#FF4E12",
+                "color": "#FFC72C"
+            }
+        },
+        {
+            "code": "en",
+            "name": "English",
+            "style": {
+                "background": "#012169",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "eo",
+            "name": "Esperanto",
+            "nativeName": "Esperanto",
+            "style": {
+                "background": "#009900",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "et",
+            "name": "Estonian",
+            "nativeName": "Eesti keel",
+            "style": {
+                "background": "linear-gradient(180deg, #0072CE 33%, #000000 33% 67%, #FFFFFF 67%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ee",
+            "name": "Ewe",
+            "nativeName": "Eʋegbe",
+            "style": {
+                "background": "#FFD100",
+                "color": "#00A551"
+            }
+        },
+        {
+            "code": "fo",
+            "name": "Faroese",
+            "nativeName": "Føroyskt",
+            "style": {
+                "background": "#0065BD",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "fj",
+            "name": "Fijian",
+            "nativeName": "Vosa Vakaviti",
+            "style": {
+                "background": "#68BFE5",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "fi",
+            "name": "Finnish",
+            "nativeName": "Suomi",
+            "style": {
+                "background": "#002F6C",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "fr",
+            "name": "French",
+            "nativeName": "Français",
+            "style": {
+                "background": "linear-gradient(90deg, #002395 33%, #FFFFFF 33% 67%, #ED2939 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "gl",
+            "name": "Galician",
+            "nativeName": "Galego",
+            "style": {
+                "background": "#005BBB",
+                "color": "#FFD500"
+            }
+        },
+        {
+            "code": "ka",
+            "name": "Georgian",
+            "nativeName": "ქართული",
+            "style": {
+                "background": "#DA291C",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "de",
+            "name": "German",
+            "nativeName": "Deutsch",
+            "style": {
+                "background": "linear-gradient(180deg, #000000 33%, #DD0000 33% 67%, #FFCC00 67%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "el",
+            "name": "Greek",
+            "nativeName": "Ελληνικά",
+            "style": {
+                "background": "linear-gradient(180deg, #0D5EAF 50%, #FFFFFF 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "gn",
+            "name": "Guarani",
+            "nativeName": "Avañeʼẽ",
+            "style": {
+                "background": "#D52B1E",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "gu",
+            "name": "Gujarati",
+            "nativeName": "ગુજરાતી",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ht",
+            "name": "Haitian",
+            "nativeName": "Kreyòl ayisyen",
+            "style": {
+                "background": "#00209F",
+                "color": "#D21034"
+            }
+        },
+        {
+            "code": "ha",
+            "name": "Hausa",
+            "nativeName": "هَوُسَ",
+            "style": {
+                "background": "#008751",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "he",
+            "name": "Hebrew",
+            "nativeName": "עִבְרִית",
+            "style": {
+                "background": "#005EB8",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "hi",
+            "name": "Hindi",
+            "nativeName": "हिन्दी",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "hu",
+            "name": "Hungarian",
+            "nativeName": "Magyar",
+            "style": {
+                "background": "linear-gradient(180deg, #CD2A3E 33%, #FFFFFF 33% 67%, #436F4D 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "is",
+            "name": "Icelandic",
+            "nativeName": "Íslenska",
+            "style": {
+                "background": "#02529C",
+                "color": "#DC1E35"
+            }
+        },
+        {
+            "code": "id",
+            "name": "Indonesian",
+            "nativeName": "Bahasa Indonesia",
+            "style": {
+                "background": "linear-gradient(180deg, #FF0000 50%, #FFFFFF 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ia",
+            "name": "Interlingua",
+            "nativeName": "Interlingua",
+            "style": {
+                "background": "#0033A0",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ie",
+            "name": "Interlingue",
+            "nativeName": "Interlingue",
+            "style": {
+                "background": "#5B92E5",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ga",
+            "name": "Irish",
+            "nativeName": "Gaeilge",
+            "style": {
+                "background": "linear-gradient(90deg, #169B62 33%, #FFFFFF 33% 67%, #FF883E 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "it",
+            "name": "Italian",
+            "nativeName": "Italiano",
+            "style": {
+                "background": "linear-gradient(90deg, #008C45 33%, #F4F9FF 33% 67%, #CD212A 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ja",
+            "name": "Japanese",
+            "nativeName": "日本語",
+            "style": {
+                "background": "#FFFFFF",
+                "color": "#BC002D",
+                "border": "2px solid #BC002D"
+            }
+        },
+        {
+            "code": "jv",
+            "name": "Javanese",
+            "nativeName": "Basa Jawa",
+            "style": {
+                "background": "#A51C30",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "kl",
+            "name": "Kalaallisut",
+            "nativeName": "Kalaallisut",
+            "style": {
+                "background": "#C8102E",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "kn",
+            "name": "Kannada",
+            "nativeName": "ಕನ್ನಡ",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ks",
+            "name": "Kashmiri",
+            "nativeName": "कॉशुर",
+            "style": {
+                "background": "#007A3D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "kk",
+            "name": "Kazakh",
+            "nativeName": "Қазақ тілі",
+            "style": {
+                "background": "#00AFCA",
+                "color": "#FEC50C"
+            }
+        },
+        {
+            "code": "km",
+            "name": "Khmer",
+            "nativeName": "ភាសាខ្មែរ",
+            "style": {
+                "background": "#1C1F8C",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ki",
+            "name": "Kikuyu",
+            "nativeName": "Gĩkũyũ",
+            "style": {
+                "background": "#BE3A34",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "rw",
+            "name": "Kinyarwanda",
+            "nativeName": "Ikinyarwanda",
+            "style": {
+                "background": "#20603D",
+                "color": "#FED016"
+            }
+        },
+        {
+            "code": "ky",
+            "name": "Kirghiz",
+            "nativeName": "Кыргызча",
+            "style": {
+                "background": "#E8112D",
+                "color": "#FEC50C"
+            }
+        },
+        {
+            "code": "ko",
+            "name": "Korean",
+            "nativeName": "한국어",
+            "style": {
+                "background": "#FFFFFF",
+                "color": "#000",
+                "border": "2px solid #CD2E3A"
+            }
+        },
+        {
+            "code": "ku",
+            "name": "Kurdish",
+            "nativeName": "Kurdî",
+            "style": {
+                "background": "linear-gradient(180deg, #ED2939 33%, #FFFFFF 33% 67%, #4B9B37 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "lo",
+            "name": "Lao",
+            "nativeName": "ພາສາລາວ",
+            "style": {
+                "background": "#CE1126",
+                "color": "#002868"
+            }
+        },
+        {
+            "code": "la",
+            "name": "Latin",
+            "nativeName": "Latina",
+            "style": {
+                "background": "#7D1F2F",
+                "color": "#FBB434"
+            }
+        },
+        {
+            "code": "lv",
+            "name": "Latvian",
+            "nativeName": "Latviešu valoda",
+            "style": {
+                "background": "#9E3039",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "lt",
+            "name": "Lithuanian",
+            "nativeName": "Lietuvių kalba",
+            "style": {
+                "background": "linear-gradient(180deg, #FDB913 33%, #006A44 33% 67%, #C1272D 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ml",
+            "name": "Malayalam",
+            "nativeName": "മലയാളം",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "mt",
+            "name": "Maltese",
+            "nativeName": "Malti",
+            "style": {
+                "background": "#CF142B",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "zh",
+            "name": "Mandarin",
+            "nativeName": "普通话",
+            "style": {
+                "background": "#DE2910",
+                "color": "#FFDE00"
+            }
+        },
+        {
+            "code": "gv",
+            "name": "Manx",
+            "nativeName": "Gaelg",
+            "style": {
+                "background": "#DA291C",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "mi",
+            "name": "Maori",
+            "nativeName": "te reo Māori",
+            "style": {
+                "background": "#000000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "mr",
+            "name": "Marathi",
+            "nativeName": "मराठी",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "mn",
+            "name": "Mongolian",
+            "nativeName": "Монгол хэл",
+            "style": {
+                "background": "#DA2032",
+                "color": "#FFC72C"
+            }
+        },
+        {
+            "code": "ne",
+            "name": "Nepali",
+            "nativeName": "नेपाली",
+            "style": {
+                "background": "#DC143C",
+                "color": "#003893"
+            }
+        },
+        {
+            "code": "no",
+            "name": "Norwegian",
+            "nativeName": "Norsk",
+            "style": {
+                "background": "#EF2B2D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "oc",
+            "name": "Occitan",
+            "nativeName": "Occitan",
+            "style": {
+                "background": "#FED103",
+                "color": "#C60C30"
+            }
+        },
+        {
+            "code": "or",
+            "name": "Oriya",
+            "nativeName": "ଓଡ଼ିଆ",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ps",
+            "name": "Pashto",
+            "nativeName": "پښتو",
+            "style": {
+                "background": "#007A3D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "fa",
+            "name": "Persian",
+            "nativeName": "فارسی",
+            "style": {
+                "background": "linear-gradient(180deg, #239F40 33%, #FFFFFF 33% 67%, #DA0000 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "pl",
+            "name": "Polish",
+            "nativeName": "Polski",
+            "style": {
+                "background": "linear-gradient(180deg, #FFFFFF 50%, #DC143C 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "pt",
+            "name": "Portuguese",
+            "nativeName": "Português",
+            "style": {
+                "background": "linear-gradient(90deg, #006600 50%, #FF0000 50%)",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "pa",
+            "name": "Punjabi",
+            "nativeName": "ਪੰਜਾਬੀ",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "qu",
+            "name": "Quechua",
+            "nativeName": "Runa Simi",
+            "style": {
+                "background": "#D91023",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ro",
+            "name": "Romanian",
+            "nativeName": "Română",
+            "style": {
+                "background": "linear-gradient(90deg, #002B7F 33%, #FCD116 33% 67%, #CE1126 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "rm",
+            "name": "Romansh",
+            "nativeName": "Rumantsch",
+            "style": {
+                "background": "#BE0A2F",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "rn",
+            "name": "Rundi",
+            "nativeName": "Ikirundi",
+            "style": {
+                "background": "#CE1126",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ru",
+            "name": "Russian",
+            "nativeName": "Русский",
+            "style": {
+                "background": "linear-gradient(180deg, #FFFFFF 33%, #0039A6 33% 67%, #D52B1E 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sg",
+            "name": "Sango",
+            "nativeName": "Sängö",
+            "style": {
+                "background": "#FFCD00",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sa",
+            "name": "Sanskrit",
+            "nativeName": "संस्कृत",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sc",
+            "name": "Sardinian",
+            "nativeName": "Sardu",
+            "style": {
+                "background": "#D02D2D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "sr",
+            "name": "Serbian",
+            "nativeName": "Српски језик",
+            "style": {
+                "background": "linear-gradient(180deg, #C6363C 33%, #0C4076 33% 67%, #FFFFFF 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sn",
+            "name": "Shona",
+            "nativeName": "ChiShona",
+            "style": {
+                "background": "#006400",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "sd",
+            "name": "Sindhi",
+            "nativeName": "सिंधी",
+            "style": {
+                "background": "#007A3D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "si",
+            "name": "Sinhala",
+            "nativeName": "සිංහල",
+            "style": {
+                "background": "#FFBE29",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sk",
+            "name": "Slovak",
+            "nativeName": "Slovenčina",
+            "style": {
+                "background": "linear-gradient(180deg, #FFFFFF 33%, #0B4EA2 33% 67%, #EE1C25 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "sl",
+            "name": "Slovenian",
+            "nativeName": "Slovenščina",
+            "style": {
+                "background": "linear-gradient(180deg, #FFFFFF 33%, #0C4076 33% 67%, #CC0000 67%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "so",
+            "name": "Somali",
+            "nativeName": "Af Soomaali",
+            "style": {
+                "background": "#4189DD",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "st",
+            "name": "Sotho",
+            "nativeName": "Sesotho",
+            "style": {
+                "background": "#009543",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "es",
+            "name": "Spanish",
+            "nativeName": "Español",
+            "style": {
+                "background": "linear-gradient(180deg, #AA151B 50%, #F1BF00 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "su",
+            "name": "Sundanese",
+            "nativeName": "Basa Sunda",
+            "style": {
+                "background": "#CE1126",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "sw",
+            "name": "Swahili",
+            "nativeName": "Kiswahili",
+            "style": {
+                "background": "#1EB53A",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ss",
+            "name": "Swati",
+            "nativeName": "SiSwati",
+            "style": {
+                "background": "#3A75C4",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "sv",
+            "name": "Swedish",
+            "nativeName": "Svenska",
+            "style": {
+                "background": "#006AA7",
+                "color": "#FECC02"
+            }
+        },
+        {
+            "code": "tl",
+            "name": "Tagalog",
+            "nativeName": "Tagalog",
+            "style": {
+                "background": "#0038A8",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "tg",
+            "name": "Tajik",
+            "nativeName": "Тоҷикӣ",
+            "style": {
+                "background": "#CC0000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ta",
+            "name": "Tamil",
+            "nativeName": "தமிழ்",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "tt",
+            "name": "Tatar",
+            "nativeName": "Татарча",
+            "style": {
+                "background": "#008000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "te",
+            "name": "Telugu",
+            "nativeName": "తెలుగు",
+            "style": {
+                "background": "#FF9933",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "th",
+            "name": "Thai",
+            "nativeName": "ภาษาไทย",
+            "style": {
+                "background": "#A51931",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "bo",
+            "name": "Tibetan",
+            "nativeName": "བོད་སྐད་",
+            "style": {
+                "background": "#FFCD00",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ti",
+            "name": "Tigrinya",
+            "nativeName": "ትግርኛ",
+            "style": {
+                "background": "#EA0437",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "to",
+            "name": "Tonga",
+            "nativeName": "Lea faka-Tonga",
+            "style": {
+                "background": "#C10000",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "tr",
+            "name": "Turkish",
+            "nativeName": "Türkçe",
+            "style": {
+                "background": "#E30A17",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "tk",
+            "name": "Turkmen",
+            "nativeName": "Türkmen dili",
+            "style": {
+                "background": "#00843D",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "tw",
+            "name": "Twi",
+            "nativeName": "Twi",
+            "style": {
+                "background": "#FFD100",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "uk",
+            "name": "Ukrainian",
+            "nativeName": "Українська",
+            "style": {
+                "background": "linear-gradient(180deg, #005BBB 50%, #FFD500 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "ur",
+            "name": "Urdu",
+            "nativeName": "اردو",
+            "style": {
+                "background": "#01411C",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "ug",
+            "name": "Uyghur",
+            "nativeName": "ئۇيغۇرچە",
+            "style": {
+                "background": "#1B1F8A",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "uz",
+            "name": "Uzbek",
+            "nativeName": "O'zbek tili",
+            "style": {
+                "background": "#1EB53A",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "vi",
+            "name": "Vietnamese",
+            "nativeName": "Tiếng Việt",
+            "style": {
+                "background": "#DA251D",
+                "color": "#FFCD00"
+            }
+        },
+        {
+            "code": "cy",
+            "name": "Welsh",
+            "nativeName": "Cymraeg",
+            "style": {
+                "background": "linear-gradient(180deg, #00B140 50%, #FFFFFF 50%)",
+                "color": "#000"
+            }
+        },
+        {
+            "code": "wo",
+            "name": "Wolof",
+            "nativeName": "Wolof",
+            "style": {
+                "background": "#00853F",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "xh",
+            "name": "Xhosa",
+            "nativeName": "isiXhosa",
+            "style": {
+                "background": "#007749",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "yi",
+            "name": "Yiddish",
+            "nativeName": "ייִדיש",
+            "style": {
+                "background": "#0038B8",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "yo",
+            "name": "Yoruba",
+            "nativeName": "Yorùbá",
+            "style": {
+                "background": "#008751",
+                "color": "#fff"
+            }
+        },
+        {
+            "code": "zu",
+            "name": "Zulu",
+            "nativeName": "isiZulu",
+            "style": {
+                "background": "#007749",
+                "color": "#fff"
+            }
+        }
+    ]
+}

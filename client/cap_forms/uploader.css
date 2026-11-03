@@ -1,0 +1,39 @@
+.uploader__widget-base {
+  top: 0px !important;
+  bottom: 0px !important;
+  left: 0px !important;
+  right: 0px !important;
+  border: var(--grey-outline) solid 1px !important;
+  border-radius: var(--border--radius-size);
+  background: #FFFFFF;
+  font-size: 1rem;
+}
+
+.btn .btn--file {
+	color: var(--colours--white) !important;
+}
+
+.uploader__submitted-file__name, .uploader__submitted-file__action, .uploader__submitted-file__container {
+	font-size: var(--tiny-size)!important;
+  line-height: var(--tiny-height) !important;
+}
+
+.uploader .btn {
+ 	border-radius: var(--border--radius-size)!important;
+  background: var(--colours--ebbett-red) !important;
+  color: var(--colours--white) !important;
+  border-color: var(--colours--ebbett-red) !important;
+  font-weight: 600 !important;
+  font-family: "Poppins", sans-serif;
+  line-height: var(--tiny-height) !important;
+  padding: .5rem .75rem !important;
+  font-size: var(--tiny-size) !important;
+  letter-spacing: 1px;
+  transition: background-color .4s ease-in, opacity .2s;
+}
+
+.uploader__submitted-file__action {
+  color: var(--colours--ebbett-red)!important;
+  font-weight: 700 !important;
+  font-family: "Poppins", sans-serif;
+}

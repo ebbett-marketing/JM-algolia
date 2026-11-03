@@ -1,0 +1,240 @@
+/* cap_dropdown — styles for the dependency-free dealership dropdown.
+   Visual parity targets: legacy Select2 skin + the override CSS lib_select2
+   injected (38px control, grey borders, site border radius, two-line options,
+   mobile/iOS adjustments). */
+
+/* Webflow variable bindings (Adam 2026-08-06) — colours/radii resolve from the
+   dev site's published variables; the value after each comma is the fallback
+   for pages that don't load the Webflow stylesheet. Select2's active-option
+   blue (#5897fb) is left hardcoded: it's the legacy skin this module has to
+   match, and there is no brand blue to bind it to. */
+:root {
+  --wd-dropdown-grey: var(--_ebbett-colors---ebbett-grey, #404040);
+  --wd-dropdown-white: var(--_ebbett-colors---white, #fff);
+  --wd-dropdown-muted: var(--_ebbett-colors---ebbett-grey-80, #666);    /* placeholder, group labels */
+  --wd-dropdown-border: var(--_ebbett-colors---ebbett-grey-60, #8c8c8c);/* control + panel borders, arrow */
+  --wd-dropdown-selected: var(--_ebbett-colors---ebbett-grey-20, #d9d9d9);
+  --wd-dropdown-radius: var(--_sizes---border-radius--medium, 0.625rem);
+  /* EM-278: the closed control mirrors the native .select-field.w-select it
+     sits beside in forms (1px #999 border, 8px/12px padding, 14px, body text
+     colour) — the numbers are Webflow's own for that class */
+  --wd-dropdown-control-border: #999;
+  --wd-dropdown-text: var(--text-primary, #333);
+}
+
+.wd-dropdown_native {
+  display: none !important;
+}
+
+/* if the legacy Select2 loader still runs after us (dev during transition)
+   and mounts its widget anyway, keep it off-screen */
+select.wd-dropdown_native ~ .select2-container {
+  display: none !important;
+}
+
+/* while a dropdown is open, its containing section must paint above the
+   following sections (Webflow sections later in the DOM otherwise win) */
+.wd-dropdown_section-raised {
+  z-index: 1051 !important;
+}
+/* only a static section needs a positioning context for the z-index;
+   modal overlays (absolute/fixed) keep theirs — EM-70 follow-up */
+.wd-dropdown_section-raised.wd-dropdown_section-static {
+  position: relative;
+}
+
+.wd-dropdown {
+  position: relative;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.wd-dropdown_toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  background: var(--wd-dropdown-white);
+  border: 1px solid var(--wd-dropdown-control-border);
+  border-radius: var(--wd-dropdown-radius);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--wd-dropdown-text);
+  cursor: pointer;
+}
+
+.wd-dropdown_toggle:focus-visible {
+  outline: 2px solid var(--wd-dropdown-grey);
+  outline-offset: 1px;
+}
+
+.wd-dropdown_value {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wd-dropdown_value .option-subtitle {
+  display: none; /* selection shows the title only; subtitle lives in the list */
+}
+
+.wd-dropdown_value .option-title {
+  font-weight: 600;
+}
+
+/* placeholder reads like the native select's "Please select..." option:
+   same colour and size as a value (EM-278) */
+.wd-dropdown_placeholder {
+  color: inherit;
+  font-size: inherit;
+}
+
+/* EM-278 follow-up (Josi): the arrow is the same chevron Chrome draws on the
+   native <select> beside it (a 12px stroked "v" in the text colour), not the
+   old Select2 triangle. Flips when open. */
+.wd-dropdown_arrow {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23333' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.15s ease;
+}
+
+.wd-dropdown.is-open .wd-dropdown_arrow {
+  transform: rotate(180deg);
+}
+
+.wd-dropdown_panel {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 1051; /* legacy Select2 dropdown layer */
+  background: var(--wd-dropdown-white);
+  border: 1px solid var(--wd-dropdown-border);
+  border-radius: var(--wd-dropdown-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden; /* keep square option-hover backgrounds inside the 10px corners */
+}
+
+.wd-dropdown_search {
+  display: block;
+  width: calc(100% - 8px);
+  margin: 4px;
+  padding: 4px 6px;
+  border: 1px solid var(--wd-dropdown-border);
+  border-radius: var(--wd-dropdown-radius);
+  font-family: inherit;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.wd-dropdown_list {
+  max-height: 300px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.wd-dropdown_group-label {
+  padding: 6px 8px 2px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--wd-dropdown-muted);
+}
+
+.wd-dropdown_list li[role="option"] {
+  margin: 0;
+  padding: 6px 8px 6px 16px;
+  cursor: pointer;
+}
+
+.wd-dropdown_list li[role="option"] .option {
+  display: flex;
+  flex-direction: column;
+}
+
+.wd-dropdown_list .option-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.wd-dropdown_list .option-subtitle {
+  font-weight: 300;
+  font-size: 0.75rem;
+}
+
+.wd-dropdown_list li[role="option"].is-active,
+.wd-dropdown_list li[role="option"]:hover {
+  background: #5897fb;
+  color: var(--wd-dropdown-white);
+}
+
+.wd-dropdown_list li[role="option"].is-selected {
+  background: var(--wd-dropdown-selected);
+}
+
+.wd-dropdown_list li[role="option"].is-selected.is-active {
+  background: #5897fb;
+  color: var(--wd-dropdown-white);
+}
+
+.wd-dropdown_empty {
+  padding: 8px;
+  color: var(--wd-dropdown-muted);
+}
+
+.wd-dropdown_visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* iOS optimizations (parity with legacy override CSS) */
+@supports (-webkit-touch-callout: none) {
+  .wd-dropdown {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wd-dropdown_toggle {
+    -webkit-appearance: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .wd-dropdown_list li[role="option"] {
+    padding: 0.8rem 1rem 0.5rem;
+  }
+  .wd-dropdown_list .option-title {
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+  }
+  .wd-dropdown_list .option-subtitle {
+    font-size: 0.8rem;
+    line-height: 1.2rem;
+  }
+  .wd-dropdown_value {
+    font-size: 1.2rem;
+  }
+  .wd-dropdown_placeholder {
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+  }
+  .wd-dropdown_search {
+    font-size: 16px; /* prevents iOS focus zoom */
+  }
+}

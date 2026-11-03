@@ -1,0 +1,1058 @@
+/* cap_search — base styles for every wd-search_* class. Injected as the
+   FIRST stylesheet so the site's Webflow CSS (and Designer edits to these
+   classes) win the cascade. State is classes/[hidden] only — JS never sets
+   inline styles. Fonts inherit from the site (Poppins); Ebbett red is used
+   sparingly (tags, hovers, focus). Page-level offer/news/dealership cards
+   reuse site card classes and style themselves. */
+
+/* ── Webflow variable bindings (Adam 2026-08-06) ──────────────────────────────
+   Every colour and radius below resolves from the dev site's published Webflow
+   variables, so changing a swatch or the radius in the Designer updates this
+   module too. The hex/length after each comma is the fallback for the Tier 1
+   protos and demo pages, which don't load the Webflow stylesheet.
+
+   Radii are derived from --_sizes---border-radius--medium (.625rem = 10px)
+   with a multiplier rather than mapped onto the small/large variables — those
+   are both 0px on the dev site, so mapping onto them would square off every
+   thumbnail and chip. The multipliers reproduce today's pixel values exactly
+   and scale proportionally if Adam changes the site radius. */
+:root {
+  /* brand */
+  --wd-search-red: var(--_ebbett-colors---ebbett-red, #c4161c);
+  --wd-search-red-hover: var(--_ebbett-colors---ebbett-red-120, #9d1216);
+  --wd-search-grey: var(--_ebbett-colors---ebbett-grey, #404040);
+  --wd-search-white: var(--_ebbett-colors---white, #fff);
+  /* greys, by role */
+  --wd-search-muted: var(--_ebbett-colors---ebbett-grey-80, #666);      /* secondary text */
+  --wd-search-faint: var(--_ebbett-colors---ebbett-grey-60, #8c8c8c);   /* tertiary text  */
+  --wd-search-line: var(--_ebbett-colors---ebbett-grey-20, #d9d9d9);    /* control borders */
+  --wd-search-line-soft: var(--_ebbett-colors---ebbett-grey-10, #ececec); /* dividers, card borders */
+  --wd-search-surface: var(--_ebbett-colors---ebbett-grey-5, #f6f6f6);  /* hover fill, tag base */
+  --wd-search-placeholder: var(--_ebbett-colors---ebbett-grey-10, #ececec); /* image placeholder */
+  /* geometry */
+  --wd-search-radius-lg: calc(var(--_sizes---border-radius--medium, 0.625rem) * 1.2); /* 12px */
+  --wd-search-radius: var(--_sizes---border-radius--medium, 0.625rem);                /* 10px */
+  --wd-search-radius-md: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.8); /*  8px */
+  --wd-search-radius-sm: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.6); /*  6px */
+  --wd-search-radius-xs: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.5); /*  5px */
+}
+
+/* site classes like .button set display:flex, which outranks the UA [hidden]
+   style — re-assert it for everything the module toggles (cms_browse lesson) */
+.wd-search_overlay [hidden],
+.wd-search_page [hidden],
+[data-wd-search-page] [hidden],
+[data-wd-search-templates] {
+  display: none !important;
+}
+
+body.wd-search-open {
+  overflow: hidden;
+}
+
+/* ── nav trigger ─────────────────────────────────────────────────────────── */
+
+.wd-search_trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--wd-search-line);
+  border-radius: 999px;
+  color: var(--wd-search-grey);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.wd-search_trigger:hover,
+.wd-search_trigger:focus-visible {
+  border-color: var(--wd-search-grey);
+}
+
+.wd-search_trigger-icon {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .wd-search_trigger {
+    padding: 0.45rem;
+  }
+
+  .wd-search_trigger-label {
+    display: none;
+  }
+}
+
+/* ── overlay ─────────────────────────────────────────────────────────────── */
+
+.wd-search_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  /* above the nav */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wd-search_overlay.is-closed {
+  display: none;
+}
+
+/* JS owns state classes — the OPEN state must out-rank a Designer base-class
+   display:none on .wd-search_overlay (the natural Webflow way to hide the
+   authored shell, and exactly what the dev site ships). Base-class rules sit
+   at 0-1-0 wherever they load; this 0-2-0 state rule wins both ways. */
+.wd-search_overlay.is-open {
+  display: flex;
+  align-items: center;
+}
+
+.wd-search_backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.wd-search_panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(720px, calc(100% - 2rem));
+  max-height: 72vh;
+  margin-top: 12vh;
+  background: var(--wd-search-white);
+  border-radius: var(--wd-search-radius-lg);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+/* .is-closed is display:none, so open uses a keyframe (transitions can't
+   cross a display change) */
+.wd-search_overlay.is-open .wd-search_panel {
+  animation: wd-search-pop 0.18s ease-out;
+}
+
+.wd-search_overlay.is-open .wd-search_backdrop {
+  animation: wd-search-fade 0.18s ease-out;
+}
+
+@keyframes wd-search-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wd-search-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .wd-search_overlay.is-open .wd-search_panel,
+  .wd-search_overlay.is-open .wd-search_backdrop {
+    animation: none;
+  }
+}
+
+/* mobile: full-screen sheet */
+@media (max-width: 767px) {
+  .wd-search_panel {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+/* ── input row ───────────────────────────────────────────────────────────── */
+
+.wd-search_input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--wd-search-line-soft);
+  color: var(--wd-search-grey);
+}
+
+.wd-search_input-icon {
+  display: flex;
+  align-items: center;
+  color: var(--wd-search-faint);
+}
+
+/* the authored shell ships an empty slot; the module creates the input into
+   it — both paths must render identically */
+.wd-search_input-slot {
+  display: flex;
+  flex: 1;
+}
+
+.wd-search_input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1.125rem;
+  color: inherit;
+  outline: none;
+  padding: 0;
+}
+
+.wd-search_input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.wd-search_esc {
+  flex: none;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--wd-search-line);
+  border-radius: var(--wd-search-radius-sm);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wd-search-faint);
+  cursor: pointer;
+}
+
+.wd-search_esc:hover,
+.wd-search_esc:focus-visible {
+  color: var(--wd-search-grey);
+  border-color: var(--wd-search-grey);
+}
+
+/* ── results area ────────────────────────────────────────────────────────── */
+
+.wd-search_results {
+  flex: 1 1 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.75rem 1.25rem 1rem;
+}
+
+.wd-search_hint,
+.wd-search_empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--wd-search-muted);
+}
+
+.wd-search_section {
+  margin-top: 1rem;
+}
+
+.wd-search_section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.wd-search_section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wd-search-grey);
+}
+
+.wd-search_show-all {
+  font-size: 0.8rem;
+  color: var(--wd-search-red);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wd-search_show-all:hover,
+.wd-search_show-all:focus-visible {
+  text-decoration: underline;
+}
+
+/* stock mini cards — horizontal card, 2-up desktop / 1-up mobile */
+.wd-search_row[data-wd-search-row="stock"],
+.wd-search_section.is-stock .wd-search_row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.5rem;
+}
+
+.wd-search_stock-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: var(--wd-search-radius-md);
+  text-decoration: none;
+  color: inherit;
+  /* grid items default to min-width:auto — without this, long nowrap titles
+     blow the card out of its track instead of ellipsizing */
+  min-width: 0;
+}
+
+.wd-search_stock-card:hover,
+.wd-search_stock-card:focus-visible {
+  background: var(--wd-search-surface);
+}
+
+.wd-search_stock-image {
+  flex: none;
+  width: 96px;
+  height: 72px;
+  border-radius: var(--wd-search-radius-sm);
+  object-fit: cover;
+  background: var(--wd-search-placeholder);
+}
+
+.wd-search_stock-body {
+  min-width: 0;
+  /* keep name/meta/price truncation inside the card bounds */
+  overflow: hidden;
+}
+
+.wd-search_stock-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wd-search_stock-meta {
+  font-size: 0.75rem;
+  color: var(--wd-search-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wd-search_stock-price {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--wd-search-red);
+}
+
+/* model mini cards — small vertical tiles */
+.wd-search_row[data-wd-search-row="models"],
+.wd-search_section.is-models .wd-search_row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+/* EM-287 (Alex, 2026-09-11): model cards site-wide share one look — the
+   Webflow "Featured models" card (.vehicle-models_link): white, 16:9 contained
+   cut-out image, 600-weight name. The overlay mini is that card at thumbnail
+   scale; the /site-search rail card below carries the full type ramp. */
+.wd-search_model-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: var(--wd-search-white);
+  border-radius: var(--wd-search-radius-md);
+  text-decoration: none;
+  color: var(--wd-search-grey);
+  min-width: 0; /* see .wd-search_stock-card — same grid blowout fix */
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+
+.wd-search_model-card:hover,
+.wd-search_model-card:focus-visible {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.wd-search_model-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.wd-search_model-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── bottom zone: [filters | merged] columns (Josi 2026-08-04) ───────────────
+   .has-filters (module-owned state) switches on the filters column; without
+   it the merged list takes the full width. Mobile: the pills move ABOVE the
+   list as a horizontal wrap (order:-1) — filter controls belong before the
+   list they scope, and a pill row costs far less height than the old pages
+   column did. */
+.wd-search_bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.wd-search_bottom.has-filters {
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+
+.wd-search_bottom > .wd-search_section {
+  margin-top: 0;
+  min-width: 0;
+}
+
+.wd-search_bottom.has-filters .wd-search_section.is-filters {
+  border-right: 1px solid var(--wd-search-line-soft);
+  padding-right: 1rem;
+}
+
+@media (max-width: 767px) {
+  .wd-search_bottom.has-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wd-search_bottom.has-filters .wd-search_section.is-filters {
+    order: -1;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .wd-search_filter-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* filters column — one category pill per merged category. JS owns is-active /
+   is-empty; the Webflow base class may restyle the pill, so the state rules
+   below are 2-class (0-2-0) to out-rank it regardless of load order. */
+.wd-search_filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.wd-search_filter-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--wd-search-line);
+  border-radius: 999px;
+  background: var(--wd-search-white);
+  font-size: 0.8rem;
+  color: var(--wd-search-grey);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.wd-search_filter-pill:not(.is-active):hover,
+.wd-search_filter-pill:not(.is-active):focus-visible {
+  border-color: var(--wd-search-grey);
+  background: var(--wd-search-surface);
+}
+
+.wd-search_filter-pill.is-active {
+  background: var(--wd-search-grey);
+  border-color: var(--wd-search-grey);
+  color: var(--wd-search-white);
+}
+
+.wd-search_filter-pill.is-active .wd-search_filter-pill-count {
+  color: var(--wd-search-white);
+}
+
+.wd-search_filter-pill.is-empty {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.wd-search_filter-pill-count {
+  font-size: 0.7rem;
+  color: var(--wd-search-faint);
+}
+
+/* merged tagged list — full-width outlined rows with a thumbnail */
+.wd-search_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wd-search_list-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid var(--wd-search-line-soft);
+  border-radius: var(--wd-search-radius-md);
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.wd-search_list-row:hover,
+.wd-search_list-row:focus-visible {
+  background: var(--wd-search-surface);
+  border-color: var(--wd-search-line);
+}
+
+.wd-search_list-row:hover .wd-search_list-title {
+  color: var(--wd-search-red);
+}
+
+.wd-search_list-image {
+  flex: none;
+  width: 88px;
+  height: 60px;
+  border-radius: var(--wd-search-radius-sm);
+  object-fit: cover;
+  background: var(--wd-search-placeholder);
+}
+
+/* soft-tint tags (Josi's pick 2026-08-04, playground variant E): quiet pastel
+   per category, slimmer than the original pill. Grey base is the fallback for
+   any category without a tint rule. */
+.wd-search_tag {
+  flex: none;
+  align-self: flex-start;
+  margin-bottom: 0.15rem;
+  padding: 0.06rem 0.5rem;
+  border-radius: var(--wd-search-radius-xs);
+  background: var(--wd-search-surface);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--wd-search-grey);
+  white-space: nowrap;
+}
+
+.wd-search_tag.wd-tag-offers {
+  background: #faf0f0;
+  color: #9c3d3d;
+}
+
+.wd-search_tag.wd-tag-news {
+  background: #eff3f8;
+  color: #4a6584;
+}
+
+.wd-search_tag.wd-tag-dealerships {
+  background: #eff5f0;
+  color: #4a7355;
+}
+
+/* tag sits ABOVE the title inside the text stack */
+.wd-search_list-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.wd-search_list-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wd-search_list-meta {
+  font-size: 0.75rem;
+  color: var(--wd-search-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── sticky footer ───────────────────────────────────────────────────────── */
+
+.wd-search_footer {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--wd-search-line-soft);
+  background: var(--wd-search-white);
+}
+
+/* the site's .button class styles the CTA; keep a sane fallback for
+   demo/protos without site CSS */
+.wd-search_all-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* ── /search page ────────────────────────────────────────────────────────── */
+
+.wd-search_page {
+  width: 100%;
+}
+
+/* big search bar above the results heading (Josi 2026-08-03) */
+.wd-search_page-bar {
+  max-width: 640px;
+  margin: 2.5rem 0 0;
+}
+
+.wd-search_page-submit {
+  flex: none;
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--wd-search-red);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--wd-search-white);
+  cursor: pointer;
+}
+
+.wd-search_page-submit:hover,
+.wd-search_page-submit:focus-visible {
+  background: var(--wd-search-red-hover);
+}
+
+/* Phones (Josi 16 Sep): the Search button overflowed the bar on the results
+   page — hide it; Enter / the keyboard's search key still submits the form. */
+@media (max-width: 479px) {
+  .wd-search_page-submit { display: none; }
+}
+
+.wd-search_page-header {
+  margin: 1.5rem 0 1rem;
+}
+
+.wd-search_page-heading {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--wd-search-grey);
+}
+
+.wd-search_page-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--wd-search-muted);
+}
+
+.wd-search_pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.wd-search_pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--wd-search-line);
+  border-radius: 999px;
+  background: var(--wd-search-white);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--wd-search-grey);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.wd-search_pill:hover,
+.wd-search_pill:focus-visible {
+  border-color: var(--wd-search-grey);
+}
+
+.wd-search_pill.is-active {
+  background: var(--wd-search-grey);
+  border-color: var(--wd-search-grey);
+  color: var(--wd-search-white);
+}
+
+.wd-search_pill-count {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.wd-search_page-section {
+  margin-bottom: 2.5rem;
+}
+
+.wd-search_page-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.wd-search_page-section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--wd-search-grey);
+}
+
+.wd-search_page-section-count {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--wd-search-muted);
+  margin-left: 0.25rem;
+}
+
+/* scroll-snap rows: 3-wide desktop, 2 tablet, ~1 mobile; every card type
+   (site-class cards included) gets its flex sizing from the row */
+.wd-search_scroller {
+  position: relative;
+}
+
+.wd-search_snap-row {
+  --wd-search-gap: 1rem;
+  display: flex;
+  gap: var(--wd-search-gap);
+  overflow-x: auto;
+  /* 2026-09-08 (Josi): overflow-x:auto makes the row a scroll container in
+     BOTH axes, and the Stock Card's hidden hover tooltips (.wd-tooltip,
+     weekly price / views) sit ~50px below the card — so the rail grew a
+     vertical scrollbar on the "All" view. Clip the cross axis; the
+     tooltips can't render inside a scroll container anyway. */
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.wd-search_snap-row .wd-tooltip { display: none; }
+
+/* 0-2-0 on purpose: site card classes (e.g. the Stock Card's own
+   .stock-selector_item-link with flex:1 1 0%) load AFTER search.css and would
+   win an equal-specificity tie — row sizing is module-owned layout, so it
+   must out-specify any single card class (dev /site-search finding 2026-08-03) */
+.wd-search_scroller .wd-search_snap-row>* {
+  flex: 0 0 calc((100% - 2 * var(--wd-search-gap)) / 3);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 991px) {
+  .wd-search_scroller .wd-search_snap-row>* {
+    flex-basis: calc((100% - var(--wd-search-gap)) / 2);
+  }
+}
+
+/* EM-416 (Alex, 2026-09-17, mockup on the ticket): on phones the rail bleeds
+   to the viewport edges (no grey band inside the page gutter), the snapped
+   card sits centred with its neighbours peeking either side, and the arrows
+   move in from the edge. --_sizes---container--padding-global is the site's
+   page gutter (1.25rem on phones); the negative margin cancels it, and the
+   row's side padding is that same gutter, so the snapped card lines up with
+   the section heading above it (Josi, 24 Sep). flex-basis 100% of the padded
+   box = a gutter-to-gutter card; the 0.5rem phone gap leaves ~12px of each
+   neighbour showing at the viewport edge. */
+@media (max-width: 639px) {
+  [data-wd-search-page] .wd-search_scroller {
+    margin-left: calc(-1 * var(--_sizes---container--padding-global, 1.25rem));
+    margin-right: calc(-1 * var(--_sizes---container--padding-global, 1.25rem));
+  }
+
+  .wd-search_scroller .wd-search_snap-row {
+    --wd-search-gap: 0.5rem;
+    --wd-search-peek: var(--_sizes---container--padding-global, 1.25rem);
+    padding-left: var(--wd-search-peek);
+    padding-right: var(--wd-search-peek);
+    scroll-padding-left: var(--wd-search-peek);
+    scroll-padding-right: var(--wd-search-peek);
+    scrollbar-width: none;
+  }
+
+  .wd-search_scroller .wd-search_snap-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wd-search_scroller .wd-search_snap-row>* {
+    flex-basis: 100%;
+    scroll-snap-align: center;
+  }
+
+  .wd-search_arrow.is-prev {
+    left: 0.75rem;
+  }
+
+  .wd-search_arrow.is-next {
+    right: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-search_snap-row {
+    scroll-behavior: auto;
+  }
+}
+
+.wd-search_arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--wd-search-line);
+  border-radius: 50%;
+  background: var(--wd-search-white);
+  color: var(--wd-search-grey);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+.wd-search_arrow:hover,
+.wd-search_arrow:focus-visible {
+  color: var(--wd-search-red);
+  border-color: var(--wd-search-red);
+}
+
+.wd-search_arrow.is-prev {
+  left: -0.5rem;
+}
+
+.wd-search_arrow.is-next {
+  right: -0.5rem;
+}
+
+/* category-scoped grid */
+.wd-search_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem 1rem;
+}
+
+/* EM-124: the Designer's own `.wd-search_grid` class (3 columns, no
+   breakpoint values) loads AFTER this sheet and out-ranked the plain
+   breakpoint rules below → three squashed columns at 390px. Scoping them to
+   the mount wins on specificity; the desktop column count stays
+   Designer-owned. Mobile = one column, same as /stock/all's card list. */
+@media (max-width: 991px) {
+  [data-wd-search-page] .wd-search_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  [data-wd-search-page] .wd-search_grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.wd-search_more-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.wd-search_load-more {
+  padding: 0.6rem 1.6rem;
+  border: 1px solid var(--wd-search-grey);
+  border-radius: 999px;
+  background: var(--wd-search-white);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--wd-search-grey);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.wd-search_load-more:hover,
+.wd-search_load-more:focus-visible {
+  background: var(--wd-search-grey);
+  color: var(--wd-search-white);
+}
+
+/* page-level wd-search_* cards (stock / model / page).
+   EM-413 (Alex, 2026-09-17): square corners — every site card (Stock Card,
+   offer/news, dealership) is square; only the overlay minis keep a radius.
+   The Designer's own .wd-search_card class (border-radius:10px) loads after
+   this sheet, so the mount-scoped rule below out-specifies it. */
+.wd-search_card,
+[data-wd-search-page] .wd-search_card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--wd-search-line-soft);
+  border-radius: 0;
+  background: var(--wd-search-white);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease;
+}
+
+.wd-search_card:hover,
+.wd-search_card:focus-visible {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.wd-search_card-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--wd-search-placeholder);
+}
+
+.wd-search_card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.wd-search_card-title {
+  font-weight: 600;
+  color: var(--wd-search-grey);
+}
+
+.wd-search_card:hover .wd-search_card-title {
+  color: var(--wd-search-red);
+}
+
+.wd-search_card-subtitle {
+  font-size: 0.8rem;
+  color: var(--wd-search-muted);
+}
+
+/* 3-line clamp: page-card descriptions run long (crawler OG descriptions).
+   The site's Webflow rule for this class sets only font-size/color, so the
+   clamp never fights the cascade. */
+.wd-search_card-meta {
+  font-size: 0.8rem;
+  color: var(--wd-search-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.wd-search_card-price {
+  margin-top: 0.25rem;
+  font-weight: 600;
+  color: var(--wd-search-red);
+}
+
+.wd-search_card.is-page .wd-search_card-body {
+  padding: 1rem;
+}
+
+/* EM-287: the /site-search model card mirrors .vehicle-models_link exactly —
+   1rem padding, no border/radius, 16:9 contained image, name in the h5 ramp
+   (600 / medium), price line in the body ramp at 300. The Models index has no
+   "+ORC" detail field, so the card ends at the price line; brand is already in
+   the model name, so the subtitle slot is unused (see templates.js). */
+.wd-search_card.is-model {
+  padding: 1rem;
+  border: 0;
+  border-radius: 0;
+}
+
+.wd-search_card.is-model:hover,
+.wd-search_card.is-model:focus-visible {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.wd-search_card.is-model .wd-search_card-image {
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: transparent;
+}
+
+.wd-search_card.is-model .wd-search_card-body {
+  padding: 0;
+  gap: 0;
+}
+
+.wd-search_card.is-model .wd-search_card-title {
+  margin: 10px 0 0.25rem;
+  font-family: var(--_typography---font-styles--heading, inherit);
+  font-size: var(--_typography---h5, 1.25rem);
+  line-height: var(--_typography---line-height--medium, 1.75rem);
+  font-weight: 600;
+  color: var(--text-secondary, #1a1a1a);
+}
+
+.wd-search_card.is-model:hover .wd-search_card-title {
+  color: var(--text-secondary, #1a1a1a);
+}
+
+.wd-search_card.is-model .wd-search_card-price {
+  margin-top: 0;
+  font-weight: 300;
+  color: var(--text-secondary, #1a1a1a);
+}
+
+/* site-class cards inside our rows/grids: keep imgs contained even without
+   the site stylesheet (demo/protos) */
+.wd-search_hit img {
+  max-width: 100%;
+}
+
+/* empty-query state on /search */
+.wd-search_page-empty {
+  max-width: 540px;
+  margin: 4rem auto;
+}
+
+.wd-search_page-empty-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--wd-search-grey);
+  text-align: center;
+}
+
+.wd-search_input-row.is-page {
+  border: 1px solid var(--wd-search-line);
+  border-radius: 999px;
+  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
+}
+
+.wd-search_page-empty-submit {
+  flex: none;
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--wd-search-red);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--wd-search-white);
+  cursor: pointer;
+}
+
+.wd-search_page-empty-submit:hover,
+.wd-search_page-empty-submit:focus-visible {
+  background: var(--wd-search-red-hover);
+}

@@ -1,0 +1,742 @@
+/* Webflow variable bindings (Adam 2026-08-06) — colours and radii resolve from
+   the dev site's published Webflow variables so a Designer change flows through
+   here too; the value after each comma is the fallback for pages that don't
+   load the Webflow stylesheet. Radii derive from border-radius--medium with a
+   multiplier because the site's small/large radius variables are both 0px.
+   The rheostat range-slider's blue-greys (#878faf, #46aeda, rgb(73,85,136))
+   have no brand equivalent and are left alone. */
+:root {
+  --wd-algolia-red: var(--_ebbett-colors---ebbett-red, #c4161c);
+  --wd-algolia-red-hover: var(--_ebbett-colors---ebbett-red-120, #9d1216);
+  --wd-algolia-white: var(--_ebbett-colors---white, #fff);
+  --wd-algolia-muted: var(--_ebbett-colors---ebbett-grey-80, #666);       /* counts, secondary text */
+  --wd-algolia-border: var(--_ebbett-colors---ebbett-grey-60, #8c8c8c);   /* input + checkbox borders */
+  --wd-algolia-line: var(--_ebbett-colors---ebbett-grey-20, #d9d9d9);     /* hairlines, slider markers */
+  --wd-algolia-surface: var(--_ebbett-colors---ebbett-grey-5, #f6f6f6);   /* hover fills */
+  --wd-algolia-surface-alt: var(--_ebbett-colors---ebbett-grey-10, #ececec); /* headers, panel borders */
+  --wd-algolia-radius: var(--_sizes---border-radius--medium, 0.625rem);                /* 10px  */
+  --wd-algolia-radius-md: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.8); /*  8px  */
+  --wd-algolia-radius-sm: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.6); /*  6px  */
+  --wd-algolia-radius-xs: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.5); /*  5px  */
+  --wd-algolia-radius-xxs: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.4);/*  4px  */
+}
+
+html,
+body {
+  touch-action: manipulation;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Autocomplete */
+
+.aa-Panel {
+  position: fixed;
+}
+
+/* InstantSearch */
+
+.section_stock_template {
+  display: none;
+}
+
+.ais-Hits-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  list-style: none;
+  padding-left: 0px !important;
+}
+
+@media (max-width: 960px) {
+  .ais-Hits-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ais-Hits-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ais-Pagination-list {
+  list-style: none;
+}
+
+.ais-Pagination-item {
+  display: inline-block;
+  padding: 0 10px;
+}
+
+[ais-item="template"] {
+  height: 100%;
+}
+
+/* EM-149 (Tom): the active page is bold only — same size as its siblings
+   (the inherited 20px bump made it look like a different control). */
+.ais-Pagination-item--selected {
+  font-weight: bold;
+}
+
+/* page numbers are links, so they inherit the browser's default underline —
+   invisible at 14px light, obvious once the active page went bold (EM-149) */
+.ais-Pagination-link {
+  text-decoration: none;
+}
+
+.vs-filter-search.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* .ais-Hits-item {
+    padding: 1rem !important;
+  } */
+
+.ais-Pagination {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.region-header {
+  padding: 10px 0 5px 0;
+  font-weight: bold;
+  background-color: var(--wd-algolia-surface);
+}
+
+.dealership-item {
+  padding-left: 20px;
+}
+
+.count {
+  color: var(--wd-algolia-muted);
+  font-size: 0.9em;
+}
+
+.region-label {
+  cursor: pointer;
+}
+
+.ais-SearchBox {
+  width: 100%;
+  align-items: center;
+}
+
+.ais-SearchBox-input {
+  width: 100%;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  padding: 0.625rem 1rem 0.625rem 3rem;
+  border-radius: var(--wd-algolia-radius);
+  border: 1px solid var(--wd-algolia-border);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-shadow: none;
+  background-color: var(--wd-algolia-white);
+}
+
+.ais_search-wrapper .ais-SearchBox-reset {
+  display: none;
+}
+
+.ais_search-element.is-large .ais-SearchBox-input {
+  height: 3.5rem;
+  font-size: 1rem;
+}
+
+.ais-Dropdown .ais-SearchBox-input {
+  padding-left: 0.625rem;
+  width: calc(100% - 1rem);
+}
+
+.ais-SearchBox-input:focus-visible,
+.ais-Dropdown .ais-SearchBox-input:focus-visible {
+  border: 2px var(--wd-algolia-red) solid !important;
+}
+
+.ais-Dropdown .ais-SearchBox-reset {
+  right: 24px;
+}
+
+.ais-SearchBox-submit {
+  display: none;
+}
+
+
+
+/* RefinementList */
+
+/* --small-size is a live-site-only variable name and resolves to nothing on
+   dev, so this fell back to the inherited size — bound to the dev equivalent */
+.ais-RefinementList-noResults {
+  margin-top: 1rem;
+  font-size: var(--_typography---small, 0.8rem);
+}
+
+.ais-RefinementList {
+  padding-right: 0px !important;
+  width: 100%;
+}
+
+.ais-RefinementList-list {
+  list-style: none;
+  min-width: 100%;
+  padding: 0 1rem 0 0;
+  max-height: 24rem;
+  overflow-x: auto;
+}
+
+.ais-RefinementList-item {
+  display: block;
+  padding: 0.5rem 0.5rem;
+  height: auto;
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1rem;
+  border-radius: var(--wd-algolia-radius);
+  cursor: pointer;
+  margin-bottom: 0px
+}
+
+.ais-RefinementList {
+  height: auto !important;
+}
+
+.ais-RefinementList-item:hover {
+  background: var(--wd-algolia-surface-alt);
+}
+
+.ais-RefinementList-item--selected {
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.ais-ToggleRefinement {
+  height: 2.5rem;
+}
+
+.ais-ToggleRefinement-label {
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ais-RefinementList-checkbox,
+.ais-ToggleRefinement-checkbox {
+  display: initial;
+  min-width: 1.2rem;
+  min-height: 1.2rem;
+  max-width: 1.2rem;
+  max-height: 1.2rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--wd-algolia-white);
+  border: 1px solid var(--wd-algolia-border);
+  border-radius: var(--wd-algolia-radius-xxs);
+  cursor: pointer;
+  position: relative;
+}
+
+/* Pastel #68 (13 Oct): the button now sits on the applied-filters row
+   (Webflow .stock_applied-row, placement + spacing set in the Designer), so the
+   negative margins that squeezed it into the stats/sort row are gone. */
+.clear-all-button {
+  color: var(--wd-algolia-red) !important;
+  padding: 0.2rem 0.5rem 0.25rem;
+  height: 2.4rem;
+  border-radius: var(--wd-algolia-radius-md);
+  border: 2px solid var(--wd-algolia-red);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.clear-all-button:disabled {
+  display: none;
+  cursor: default;
+}
+
+.ais-RefinementList-checkbox:checked,
+.ais-ToggleRefinement-checkbox:checked {
+  background-color: var(--wd-algolia-red);
+  border-color: var(--wd-algolia-red);
+}
+
+.ais-RefinementList-checkbox:checked::after,
+.ais-ToggleRefinement-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  color: var(--wd-algolia-white);
+  font-size: 0.75rem;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ais-SearchBox-form {
+  position: relative;
+}
+
+.ais-RefinementList-count {
+  display: initial;
+  align-self: flex-end;
+}
+
+.ais-RefinementList-labelText {
+  flex-grow: 1;
+  white-space: nowrap;
+  text-wrap-mode: wrap;
+}
+
+.ais-RefinementList-label {
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+}
+
+.items {
+  overflow: hidden;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.items img {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  border-radius: var(--wd-algolia-radius-xs);
+}
+
+.items-info {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: center;
+  width: 100%;
+  height: 100px;
+  border-radius: var(--wd-algolia-radius-xs);
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.ais-Hits .ais-Hits--empty {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+}
+
+.no-results-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.no-results-message p {
+  margin: 0.5rem 0;
+}
+
+.no-results-message .clear-all-button {
+  margin-top: 1rem;
+  color: var(--wd-algolia-red) !important;
+  padding: 0.5rem 1rem 0.75rem;
+  border-radius: var(--wd-algolia-radius-md);
+  height: 2.75rem;
+  border: 3px solid var(--wd-algolia-red);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: transparent;
+}
+
+.no-results-message .clear-all-button:hover {
+  background-color: var(--wd-algolia-red);
+  color: var(--wd-algolia-white) !important;
+}
+
+.items-info--title {
+  margin-left: 10px;
+}
+
+.items-info--title h3 {
+  font-size: 15px;
+  /* margin-top: 0.3vw; */
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.items-info--genres {
+  margin-bottom: 15px;
+}
+
+.genre-title {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--wd-algolia-white);
+}
+
+/* Start Dropdown CSS */
+
+
+.ais_filter-placeholder {
+  border: none;
+  /* Reserve the mounted control's height so InstantSearch filling these on load
+     does not push the page down. Measured on /stock/all at the Lighthouse mobile
+     viewport: each rendered placeholder settles at 34px, and the four visible at
+     that breakpoint grew #ais_filter_container to 302px — a 0.362 CLS, against a
+     0.1 budget (task 05, criterion 3). Placeholders hidden at a breakpoint have a
+     display:none ancestor, so this cannot open dead space for them. */
+  min-height: 2.125rem;
+}
+
+.vs-filter-block {
+  position: relative;
+}
+
+.ais-SearchBox-reset {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.ais_clear-button {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+}
+
+.ais_search-container .ais_clear-button {
+  display: none;
+}
+
+
+.ais_clear-button .ais-ClearRefinements-button,
+.ais-SearchBox-reset {
+  background: var(--wd-algolia-red) !important;
+  padding: 0 0.45rem;
+  border-radius: var(--wd-algolia-radius-md);
+  border: 1px var(--wd-algolia-red) solid;
+}
+
+.ais-ClearRefinements-button,
+.ais-SearchBox-reset svg path {
+  background-color: transparent;
+  color: var(--wd-algolia-white);
+  font-weight: 700;
+  fill: var(--wd-algolia-white);
+}
+
+.ais-ClearRefinements-button--disabled {
+  display: none;
+}
+
+.ais-ClearRefinements-button--disabled {
+  display: none;
+}
+
+.ais-ClearRefinements-button:hover {
+  background-color: var(--wd-algolia-red);
+  color: var(--wd-algolia-white) !important;
+}
+
+.ais-Dropdown-button {
+  border: 1px solid var(--wd-algolia-border);
+  padding: 0.6rem 1.5rem 0.75rem;
+  border-radius: var(--wd-algolia-radius);
+  cursor: pointer;
+  font-size: 0.8rem;
+  background-color: var(--wd-algolia-white) !important;
+}
+
+.ais-Dropdown-button--refined {
+  font-weight: bold !important;
+  color: var(--wd-algolia-red) !important;
+  border: 2px solid var(--wd-algolia-red) !important;
+
+}
+
+.ais-Dropdown-button:hover {
+  background-color: var(--wd-algolia-surface);
+}
+
+.ais-Dropdown .ais-Panel-body>div>div[class^='ais-'] {
+  position: absolute;
+  border: 1px solid var(--wd-algolia-line);
+  border-radius: var(--wd-algolia-radius-xxs);
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  background-color: var(--wd-algolia-white);
+}
+
+.ais-Dropdown .ais-Panel-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#filters-1,
+#filters-2,
+#filters-3,
+#filters-4 {
+  overflow: visible;
+}
+
+.vs-filter-block {
+  overflow: visible;
+}
+
+.ais-Dropdown .ais-Panel-body {
+  display: none;
+}
+
+.ais-Dropdown--opened .ais-Panel-body {
+  display: block;
+  position: absolute;
+  z-index: 50;
+}
+
+.ais-Dropdown .ais-Panel-body {
+  position: relative;
+}
+
+.ais-Dropdown-close {
+  display: none;
+}
+
+#ais_search {
+  width: 100%;
+  max-width: 720px;
+}
+
+/*.section_filters {
+  margin-top: -4rem !important;
+}
+
+
+.section_filters.is-not-margin-neg {
+  margin-top: 0 !important;
+}
+
+.section_header.is-vehicle-stock {
+  padding-bottom: 4rem !important;
+} */
+
+
+/* Start Range CSS */
+
+#ais_filter-year {
+  width: 100%;
+  height: 36px;
+}
+
+.rheostat-background {
+  width: 100%;
+}
+
+.rheostat-horizontal {
+  width: 100%;
+  position: relative;
+}
+
+.ais-RangeSlider .rheostat-progress {
+  background-color: rgb(73, 85, 136);
+}
+
+.ais-RangeSlider .rheostat-background {
+  border-color: #878faf;
+  box-sizing: border-box;
+}
+
+.ais-RangeSlider .rheostat-handle {
+  border-color: #878faf;
+}
+
+.ais-RangeSlider .rheostat-marker {
+  background-color: #878faf;
+}
+
+.ais-Panel-body .ais-RangeSlider {
+  margin: 2rem 0;
+}
+
+.ais-RangeSlider-handle {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  z-index: 50;
+  background: var(--wd-algolia-red-hover);
+  border: 1px solid #46aeda;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ais-RangeSlider-tooltip {
+  position: absolute;
+  background: var(--wd-algolia-white);
+  top: -22px;
+  font-size: 0.8em;
+}
+
+.ais-RangeSlider-value {
+  width: 40px;
+  position: absolute;
+  text-align: center;
+  margin-left: -20px;
+  padding-top: 15px;
+  font-size: 0.8em;
+}
+
+.ais-RangeSlider-marker {
+  position: absolute;
+  background: var(--wd-algolia-line);
+  margin-left: -1px;
+  width: 1px;
+  height: 5px;
+}
+
+.ais-Hits-item {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Grid Breakpoints */
+@media (max-width: 960px) {
+  .ais-Hits-list {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .ais_filter-wrapper .ais-ClearRefinements-button {
+    line-height: 1rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+  
+  .ais_filter-wrapper .ais_clear-button, .ais_search-wrapper .ais_clear-button {
+    right: 0.5rem;
+    bottom: 0.5rem;
+  }
+  
+  .ais-SearchBox-reset {
+    line-height: 1rem;
+    padding: 0.1rem 0 0 0;
+  }
+  
+  .ais-SearchBox-resetIcon {
+    margin: 0 auto;
+  }
+  
+}
+
+@media (max-width: 480px) {
+  .ais-Hits-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Floating stats object */
+
+.floating-stats {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--wd-algolia-white);
+  border-radius: var(--wd-algolia-radius-md);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--wd-algolia-surface-alt);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 200px;
+  transition: opacity 0.3s ease;
+}
+
+.floating-stats.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.floating-stats .stats-count {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.floating-stats .view-results-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--wd-algolia-white);
+  background-color: var(--wd-algolia-red);
+  padding: 0.5rem 1rem;
+  border-radius: var(--wd-algolia-radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.floating-stats .view-results-button:hover {
+  background-color: var(--wd-algolia-red-hover);
+}
+
+@media (max-width: 768px) {
+  .floating-stats {
+      width: calc(100% - 2rem);
+      max-width: 400px;
+  }
+
+  /* EM-146: unrefined dropdown buttons shrank to their label; span the filter
+     block like the refined state does */
+  .ais-Dropdown-button {
+    width: 100%;
+  }
+
+  /* EM-146/EM-138: the Webflow filter grids stay two-column on mobile, leaving
+     a phantom right column, and the authored mobile styles cap the filter
+     fields at max-width 240px. One column, no caps, below 768px — selectors
+     out-rank the authored variants (.is-overlay included). */
+  .container-medium .stock_filters_inner.is-ais-wrapper,
+  .container-medium .stock_filters_inner.is-ais-wrapper.is-overlay {
+    grid-template-columns: 1fr;
+  }
+  .vs-filter-block,
+  .ais_filter-wrapper,
+  .ais_filter-placeholder,
+  .vs-filter-block .ais-Dropdown,
+  .ais-Dropdown-button.vs-filter-search {
+    width: 100%;
+    max-width: none;
+  }
+}

@@ -1,0 +1,682 @@
+/* Urgency-tag strip styling (stock-tags.js) — shared by the fallback renderer
+   AND the Webflow-authored slots (Josi 2026-07-28: the card component reuses
+   these class names so visuals stay identical to the approved prototype; a
+   native-Webflow restyle is a Tier 3 option). The Webflow classes of the same
+   names carry only display:none so slot markup stays invisible on pages that
+   don't load this module (legacy stock.js) — this file, loaded after the
+   Webflow stylesheet, reveals them. */
+
+/* Webflow variable bindings (Adam 2026-08-06). Own block rather than borrowing
+   styles.css's, so this file still renders if it ever loads on its own.
+   The eco (#1e7d43) and recently-added (#1d5fa8) tag colours stay hardcoded:
+   the site's system--attention-eco (#7ab326) is a lime green that drops the
+   white 0.7rem label to ~2.6:1 contrast, and there is no brand blue at all. */
+:root {
+  --wd-tags-red: var(--_ebbett-colors---ebbett-red, #c4161c);
+  --wd-tags-grey: var(--_ebbett-colors---ebbett-grey, #404040);
+  --wd-tags-white: var(--_ebbett-colors---white, #fff);
+  --wd-tags-grey-a60: var(--_ebbett-colors---ebbett-grey-a60, #40404099); /* meta text */
+  --wd-tags-grey-a20: var(--_ebbett-colors---ebbett-grey-a20, #40404033); /* chip border */
+  --wd-tags-surface: var(--_ebbett-colors---ebbett-grey-5, #f6f6f6);      /* applied-filter chips */
+  --wd-tags-font: var(--_typography---font-styles--body, Poppins, sans-serif);
+  --wd-tags-radius-md: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.8); /* 8px */
+  --wd-tags-radius-sm: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.6); /* 6px */
+}
+
+/* Webflow-authored slots: all four pills exist in the template; only the ones
+   the engine stamps .is-active may show. (Fallback pills are also stamped
+   .is-active at creation so this rule is inert for them.) */
+.wd-stock-tags [ais-tag]:not(.is-active) {
+  display: none;
+}
+
+/* Bookmark tabs (Adam 2026-07-17): hang from the top-LEFT of the card image,
+   opposite the Save $X tab — square top corners, rounded bottoms. */
+.wd-stock-tags {
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wd-stock-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.5rem 0.35rem;
+  border-radius: 0 0 var(--wd-tags-radius-md) var(--wd-tags-radius-md); /* bookmark: flush top, rounded bottom */
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--wd-tags-white);
+  background: var(--wd-tags-grey); /* Ebbett Grey default */
+  pointer-events: auto; /* strip is pointer-events:none; pills must hover */
+}
+
+.wd-stock-tag_icon {
+  display: inline-flex;
+  width: 0.9em;
+  height: 0.9em;
+  flex: none;
+}
+
+.wd-stock-tag_icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* icon pills: label collapsed, expands on hover/focus (Adam's idea) */
+.wd-stock-tag_label {
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.35s ease, opacity 0.25s ease, margin-left 0.35s ease;
+}
+
+.wd-stock-tag:hover .wd-stock-tag_label,
+.wd-stock-tag:focus-visible .wd-stock-tag_label {
+  max-width: 10em;
+  opacity: 1;
+  margin-left: 0.35em;
+}
+
+/* On touch devices and narrow viewports labels should sit expanded — but ONLY
+   when they fit (no Save-tab/edge collision). Default is collapsed everywhere;
+   updateTagStripExpansion() measures after render and stamps is-expanded on
+   strips with room. Collapsed-by-default also kills the expand-then-shrink
+   flash on load, and desktop never pays for measurement (hover handles it). */
+.wd-stock-tags.is-expanded .wd-stock-tag_label {
+  max-width: 10em;
+  opacity: 1;
+  margin-left: 0.35em;
+}
+
+/* No tooltips on touch devices (Josi) — they're hover-born; hide entirely. */
+@media (hover: none) {
+  .wd-stock-tag_tooltip,
+  .wd-has-tooltip .wd-tooltip {
+    display: none;
+  }
+}
+
+/* Transient measurement state for updateTagStripExpansion(). */
+.wd-stock-tags.is-measuring .wd-stock-tag_label {
+  max-width: 10em !important;
+  opacity: 1 !important;
+  margin-left: 0.35em !important;
+  transition: none !important;
+}
+
+/* Tooltip stacking: each hits <li> below the hovered one paints later in DOM
+   order, hiding tooltips that hang below a card — lift the hovered card. */
+#ais_results .ais-Hits-item {
+  position: relative;
+}
+
+#ais_results .ais-Hits-item:hover {
+  z-index: 30;
+}
+
+/* Two-stage hover (Adam): stage 1 the label expands immediately; stage 2 the
+   "how it's calculated" tooltip fades in ~1s later. Shared by tag pills
+   (.wd-stock-tag_tooltip) and any element marked .wd-has-tooltip (finance). */
+.wd-stock-tag {
+  position: relative;
+}
+
+.wd-stock-tag_tooltip,
+.wd-has-tooltip .wd-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--wd-tags-radius-sm);
+  background: var(--wd-tags-grey);
+  color: var(--wd-tags-white);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wd-stock-tag:hover .wd-stock-tag_tooltip,
+.wd-stock-tag:focus-visible .wd-stock-tag_tooltip,
+.wd-has-tooltip:hover .wd-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.5s; /* stage 2 (Josi: snappier than 1s) */
+}
+
+.wd-has-tooltip {
+  position: relative;
+}
+
+.wd-stock-tag.is-eco {
+  background: #1e7d43;
+}
+
+.wd-stock-tag.is-recently-added {
+  background: #1d5fa8; /* the blue pops (Josi) — carried over from "New for you" */
+}
+
+.wd-stock-tag.is-popular {
+  background: var(--wd-tags-red); /* Ebbett Red */
+}
+
+.wd-stock-tag.is-save {
+  background: var(--wd-tags-grey);
+}
+
+/* Card meta slots (search.js populateCardMeta) — weekly price + views live in
+   the pricing row AFTER the orc element; pair pushed right, row wraps narrow
+   (row wrap/align is native on the Webflow .stock-selector_pricing class).
+   The Webflow classes of the same names are display:none (legacy-page safety);
+   these rules reveal them when the module's page loads this file. */
+.wd-price-weekly {
+  display: inline-flex;
+  margin-left: auto;
+  padding-left: 0.6rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--wd-tags-grey-a60);
+  /* no align-self: the weekly price follows the Webflow row's alignment
+     (.stock-selector_pricing = baseline, Pastel #69 — sits on the price's
+     baseline instead of its vertical centre) */
+}
+
+.wd-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  margin-left: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--wd-tags-grey-a60);
+  align-self: center;
+}
+
+.wd-views svg,
+.wd-views .w-embed svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Eye icon vertical alignment (Adam 2026-07-30): the icon's inline span
+   wrapper reserves a text line box, floating the svg off the number's
+   centreline — flatten it so the flex centring centres the glyph itself. */
+.wd-views > span[aria-hidden],
+.wd-views .w-embed {
+  display: inline-flex;
+  line-height: 0;
+}
+
+/* Views tooltip (Adam 2026-07-30, copy confirmed by Josi): the slot carries
+   .wd-has-tooltip + an authored .wd-tooltip child in the Webflow component.
+   The slot hugs the card's right edge, so right-align this one. */
+.wd-views .wd-tooltip {
+  left: auto;
+  right: 0;
+}
+
+/* Grouped More-options sections (Webflow-authored .wd-filter-section* markup,
+   2026-07-28). Section layout is native Webflow; these runtime-only caps stop
+   InstantSearch-injected controls from hogging the row (Josi: no control
+   stretches full-row — dropdowns ≤240px, ranges compact). */
+.wd-filter-sections .ais_filter-wrapper {
+  margin: 0;
+  max-width: 240px;
+}
+
+/* ---- EM-241 (Josi 2026-09-08): "layout B" for the More-options box ----
+   The three Webflow sections (Vehicle / Budget & Age / Location) become three
+   titled columns instead of stacked rows, controls fill their cell, titles
+   are black tracked caps with a short red rule, field labels drop to grey.
+   #id-scoped so these out-rank the authored .wd-filter-* rules. Stacks back
+   to one column under 992px. */
+#ais_filter_container .wd-filter-sections {
+  grid-template-columns: 4fr 4.25fr 2fr; /* Josi 24 Sep: Budget gives up width for wider column gaps */
+  grid-column-gap: 3rem;
+  grid-row-gap: 1.5rem;
+  align-items: start;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+#ais_filter_container .wd-filter-section_title {
+  color: var(--text-primary, #111);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.4rem;
+  position: relative;
+}
+
+#ais_filter_container .wd-filter-section_title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--_ebbett-colors---ebbett-red, #c4161c);
+}
+
+#ais_filter_container .wd-filter-section_body,
+#ais_filter_container .wd-filter-section_body.is-budget {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+#ais_filter_container .wd-filter-section:last-child .wd-filter-section_body {
+  grid-template-columns: 1fr;
+}
+
+#ais_filter_container .stock_filters_input-label {
+  font-weight: 500;
+  color: var(--_ebbett-colors---ebbett-grey-80, #555);
+}
+
+/* controls fill their cell (the 240/460/200px caps below are pre-layout-B) */
+#ais_filter_container .wd-filter-sections .ais_filter-wrapper,
+#ais_filter_container .wd-filter-sections .ais_filter-wrapper.is-price,
+#ais_filter_container .wd-filter-sections .ais_filter-wrapper.is-weekly,
+#ais_filter_container .wd-filter-sections .ais_filter-wrapper select,
+#ais_filter_container .wd-filter-sections .ais-Panel,
+#ais_filter_container .wd-filter-sections .ais-Dropdown,
+#ais_filter_container .wd-filter-sections .ais_filter-placeholder {
+  max-width: none;
+  width: 100%;
+  min-width: 0;
+}
+
+/* EM-303: the four sliders stack in two rows — the 0.75rem row gap the
+   dropdown columns use reads as one tangle of tracks and value boxes here. */
+#ais_filter_container .wd-filter-section_body.is-budget {
+  row-gap: 2rem;
+}
+
+@media (max-width: 991px) {
+  #ais_filter_container .wd-filter-sections { grid-template-columns: 1fr; }
+}
+@media (max-width: 639px) {
+  /* phones: one control per row in every section (Josi 16 Sep) — two-up
+     truncated the slider values and crowded the Vehicle dropdowns. */
+  #ais_filter_container .wd-filter-section_body,
+  #ais_filter_container .wd-filter-section_body.is-budget { grid-template-columns: 1fr; }
+}
+
+/* ---- EM-241 range sliders (widgets/range-slider.js) ----
+   A slider-mode wrapper drops the Webflow 4-column min/max/clear grid: the
+   slider renders into the min placeholder, max + clear holder are unused. */
+.ais_filter-wrapper.wd-range-host,
+.ais_filter-wrapper.is-price.wd-range-host {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ais_filter-wrapper.wd-range-host .ais_clear-button-placeholder,
+.ais_filter-wrapper.wd-range-host .ais_clear-button,
+.ais_filter-wrapper.wd-range-host .ais_filter-seperator, /* Webflow's "-" between the old selects */
+.ais_filter-wrapper.wd-range-host .ais_filter-placeholder[hidden] { display: none !important; }
+/* EM-303 (Su-Anne 16 Sep): the label used to sit right on the track (~10px,
+   Josi 8 Sep) — give the track room to breathe under it. */
+.ais_filter-wrapper.wd-range-host .stock_filters_input-label { margin-bottom: 0.4rem; }
+
+.wd-range {
+  --wd-range-track: var(--_ebbett-colors---ebbett-grey-20, #e0e0e0);
+  --wd-range-fill: var(--_ebbett-colors---ebbett-grey-60, #9a9a9a);
+  --wd-range-thumb: var(--_ebbett-colors---ebbett-grey-60, #9a9a9a);
+  --wd-range-accent: var(--_ebbett-colors---ebbett-red, #c4161c);
+  width: 100%;
+  padding: 0.15rem 0.55rem 0;
+  box-sizing: border-box;
+}
+.wd-range.is-refined {
+  --wd-range-fill: var(--wd-range-accent);
+  --wd-range-thumb: var(--wd-range-accent);
+}
+
+.wd-range_track {
+  position: relative;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--wd-range-track);
+  margin: 0.45rem 0;
+}
+.wd-range_fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 2px;
+  background: var(--wd-range-fill);
+  transition: background-color 0.15s ease;
+}
+
+/* two invisible native ranges over one track; only the thumbs take the pointer */
+.wd-range_thumb {
+  position: absolute;
+  left: -0.55rem;
+  right: -0.55rem;
+  top: 50%;
+  width: calc(100% + 1.1rem);
+  height: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+  outline: none;
+}
+.wd-range_thumb::-webkit-slider-runnable-track { height: 0; background: transparent; }
+.wd-range_thumb::-moz-range-track { height: 0; background: transparent; }
+.wd-range_thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--wd-range-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+  transition: border-color 0.15s ease;
+}
+.wd-range_thumb::-moz-range-thumb {
+  pointer-events: all;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--wd-range-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+}
+.wd-range_thumb:active::-webkit-slider-thumb { cursor: grabbing; }
+.wd-range_thumb:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--wd-range-accent); outline-offset: 2px; }
+.wd-range_thumb:focus-visible::-moz-range-thumb { outline: 2px solid var(--wd-range-accent); outline-offset: 2px; }
+
+.wd-range_vals {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+.wd-range_sep { color: var(--_ebbett-colors---ebbett-grey-60, #9a9a9a); font-size: 0.8rem; }
+.wd-range_input {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.3rem;
+  border: 1px solid #999;
+  border-radius: var(--_sizes---border-radius--medium, 0.625rem);
+  background: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: -0.01em;
+  color: var(--text-primary, #333);
+  text-align: center;
+}
+.wd-range_input:focus { outline: 2px solid var(--wd-range-accent); outline-offset: 1px; border-color: transparent; }
+
+/* Weekly grid children: the native .is-weekly combo carries the same 4-column
+   grid as .is-price, but price's children are hand-placed in the Designer
+   (w-node) — ours place here instead. Label spans the row; the clear
+   placeholder and button stack in the last cell (holder shows when the
+   widget's button is disabled, same as price). */
+.ais_filter-wrapper.is-weekly .stock_filters_input-label {
+  grid-column: 1 / -1;
+}
+
+.ais_filter-wrapper.is-weekly .ais_clear-button-placeholder,
+.ais_filter-wrapper.is-weekly .ais_clear-button {
+  grid-area: 2 / 4;
+}
+
+.wd-filter-sections .ais_filter-wrapper.is-price,
+.wd-filter-sections .ais_filter-wrapper.is-weekly {
+  max-width: 460px;
+}
+
+.wd-filter-sections .ais_filter-wrapper select {
+  max-width: 200px;
+}
+
+/* Quick-filter preset chips (quick-filters.js) — prototype styling; Webflow
+   restyles at Tier 3. */
+
+.wd-quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* part of the search experience: centred under the search bar */
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.wd-quick-filter {
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--wd-tags-grey-a20);
+  border-radius: 999px;
+  background: var(--wd-tags-white);
+  color: var(--wd-tags-grey);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.wd-quick-filter.is-active {
+  background: var(--wd-tags-grey);
+  border-color: var(--wd-tags-grey);
+  color: var(--wd-tags-white);
+}
+
+/* Applied-filter chips (InstantSearch currentRefinements)
+   EM-99 (Adam): one pill per VALUE, not one pill per attribute — a
+   7-dealership refinement used to render as a single full-width pill that
+   wrapped mid-list. The "Dealership:" label sits inline before its pills.
+   The mount also clears the authored "More options" tab, which hangs
+   ~28px below the filter panel (absolute), so the chip row never tucks
+   under it — padding, not margin: a margin would collapse into the
+   panel's own bottom margin and add nothing. */
+
+.wd-current-filters {
+  padding-top: 0.75rem;
+}
+
+.wd-current-filters .ais-CurrentRefinements-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+}
+
+.wd-current-filters .ais-CurrentRefinements-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--wd-tags-grey);
+}
+
+.wd-current-filters .ais-CurrentRefinements-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--wd-tags-surface);
+}
+
+.wd-current-filters .ais-CurrentRefinements-label {
+  font-weight: 600;
+}
+
+.wd-current-filters .ais-CurrentRefinements-delete {
+  border: none;
+  background: none;
+  color: var(--wd-tags-red);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 0.15rem;
+}
+
+
+/* Card link button: plus swapped for the sitewide FA arrow-in-circle design
+   (Adam 2026-08-05, mirrors comparison in-stock cards / news-offer cards).
+   Right-anchored absolute circle, so the hover label expands leftward. */
+
+.stock-selector_button.wd-view-details {
+  flex-direction: row;
+  width: auto;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  transition: padding 0.25s ease;
+}
+
+/* Material inline-SVG icons (Josi 2026-08-05: FA glyphs out) — same pattern
+   as the views eye icon: currentColor, sized by the em box, no font to load. */
+.wd-icon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.wd-icon svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex: none;
+}
+
+.stock-selector_button.wd-view-details .wd-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.wd-view-details_label {
+  font-family: var(--wd-tags-font);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+}
+
+.stock-selector_button.wd-view-details:hover {
+  padding-left: 0.6rem;
+  padding-right: 0.55rem;
+}
+
+.stock-selector_button.wd-view-details:hover .wd-view-details_label {
+  max-width: 7rem;
+  opacity: 1;
+  margin-right: 0.35rem;
+}
+
+/* Touch devices have no hover: keep the plain arrow circle (the whole card is
+   the link; the button is an affordance, not the only way in). */
+
+/* EM-146/EM-138: the desktop-era caps above (dropdowns ≤240px, selects ≤200px,
+   ranges ≤460px) leave mobile fields short of the drawer width — lift them
+   below 768px; the one-column drawer grid comes from styles.css. */
+@media (max-width: 767px) {
+  .wd-filter-sections .ais_filter-wrapper,
+  .wd-filter-sections .ais_filter-wrapper.is-price,
+  .wd-filter-sections .ais_filter-wrapper.is-weekly {
+    max-width: none;
+  }
+  .wd-filter-sections .ais_filter-wrapper select {
+    max-width: none;
+  }
+}
+
+/* ---- Star-rating filters + engine power (Su-Anne 24 Sep 2026) ----
+   widgets/star-filter.js renders into #ais_filter-energy-stars /
+   #ais_filter-carbon-stars; widgets/engine-power-range.js into
+   #ais_filter-engine-power. Until the mounts are Designer-authored,
+   cms_stock/search.js injects them (data-wd-fallback): the stars as a titled
+   block under Location, the kW slider as a full-width row in Vehicle. */
+#ais_filter_container .wd-filter-subsection { margin-top: 1.5rem; }
+#ais_filter_container .wd-filter-section_body .ais_filter-wrapper.is-full { grid-column: 1 / -1; }
+.ais_filter-wrapper[hidden] { display: none !important; }
+/* Webflow sizes .ais_filter-placeholder to the select (fixed 2.5rem); a star
+   row whose hint wraps under it (narrow Location column) needs to grow */
+.ais_filter-wrapper.wd-stars-host .ais_filter-placeholder,
+.ais_filter-wrapper.is-full.wd-range-host .ais_filter-placeholder { height: auto; } /* the kW row sits above other rows */
+
+.wd-stars {
+  --wd-star-on: #ff8000; /* the product page's Start-Gold assets */
+  --wd-star-off: var(--_ebbett-colors---ebbett-grey-20, #ddd);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  min-height: 2.25rem;
+}
+.wd-stars_row {
+  display: inline-flex;
+  gap: 0.1rem;
+  touch-action: pan-y; /* horizontal drags are ours, vertical scroll stays native */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+.wd-stars_star {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0.15rem;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  color: var(--wd-star-off);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.12s ease;
+}
+.wd-stars_star svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.wd-stars_star.is-on { color: var(--wd-star-on); }
+.wd-stars_star:focus-visible { outline: 2px solid var(--_ebbett-colors---ebbett-red, #c4161c); outline-offset: 1px; }
+/* preview while dragging: the row shows the count under the finger, not the pick */
+.wd-stars_row.is-dragging .wd-stars_star { color: var(--wd-star-off); }
+.wd-stars_row.is-dragging .wd-stars_star.is-preview { color: var(--wd-star-on); }
+/* hover preview (pointer devices): fill up to the hovered star */
+@media (hover: hover) {
+  .wd-stars_row:not(.is-dragging):hover .wd-stars_star { color: var(--wd-star-off); }
+  .wd-stars_row:not(.is-dragging):hover .wd-stars_star:hover,
+  .wd-stars_row:not(.is-dragging):hover .wd-stars_star:has(~ .wd-stars_star:hover) { color: var(--wd-star-on); }
+}
+.wd-stars_hint {
+  font-size: 0.78rem;
+  color: var(--_ebbett-colors---ebbett-grey-60, #9a9a9a);
+  min-width: 4rem;
+}
+.wd-stars.is-refined .wd-stars_hint { color: var(--text-primary, #333); font-weight: 500; }

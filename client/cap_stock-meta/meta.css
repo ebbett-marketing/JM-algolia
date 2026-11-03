@@ -1,0 +1,111 @@
+/* cap_stock-meta — meta row injected top-right of .stock_detail-header
+   (placement: Josi 2026-07-30). Self-contained: the product template does not
+   load lib_algolia/tags.css, so the .wd-has-tooltip pattern is restated here
+   (same two-stage behaviour, right-aligned for the header's right edge). */
+
+/* Webflow variable bindings (Adam 2026-08-06) — self-contained for the same
+   reason the tooltip pattern is restated here. */
+:root {
+  --wd-meta-grey: var(--_ebbett-colors---ebbett-grey, #404040);
+  --wd-meta-grey-a60: var(--_ebbett-colors---ebbett-grey-a60, #40404099);
+  --wd-meta-white: var(--_ebbett-colors---white, #fff);
+  --wd-meta-radius-sm: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.6); /* 6px */
+}
+
+.stock_detail-header {
+  position: relative;
+}
+
+.wd-stock-meta {
+  position: absolute;
+  top: 0.25rem;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--wd-meta-grey-a60);
+}
+
+/* The mobile header variant centres its text — a top-right absolute would sit
+   on the centred h1, so the meta becomes a centred static row instead. */
+.stock_detail-header.is-shown-mobileh .wd-stock-meta {
+  position: static;
+  justify-content: center;
+  margin-top: 0.35rem;
+}
+
+.wd-meta-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+/* Flatten the icon wrapper so flex centring centres the glyph, not the
+   wrapper's text line box (same fix as the card's eye icon). */
+.wd-meta-views_icon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.wd-meta-views_icon svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Two-stage tooltip (shared pattern with tags.css): host hover -> 0.5s delay
+   -> tooltip. Right-aligned: the host hugs the header's right edge. */
+.wd-has-tooltip {
+  position: relative;
+}
+
+.wd-has-tooltip .wd-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--wd-meta-radius-sm);
+  background: var(--wd-meta-grey);
+  color: var(--wd-meta-white);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wd-has-tooltip:hover .wd-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.5s;
+}
+
+/* No tooltips on touch devices (Josi) — hover-born, hide entirely. */
+@media (hover: none) {
+  .wd-has-tooltip .wd-tooltip {
+    display: none;
+  }
+}
+
+/* Safety stars (Adam 2026-08-05): the Webflow-authored block carries gold AND
+   grey imgs for every half-star (same structure the CMS conditional-visibility
+   star blocks publish); meta.js toggles .wd-star-hidden per img instead of CMS
+   conditions. Authored hidden — only a found Active record with a usable
+   safety_stars value reveals it, so misses leave the page untouched. */
+
+[ais-item="safety-stars"]:not(.wd-stars-filled) {
+  display: none;
+}
+
+[ais-item="safety-stars"] img.wd-star-hidden {
+  display: none;
+}

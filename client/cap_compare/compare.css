@@ -1,0 +1,681 @@
+/* cap_compare — comparison tool styling, v3 per the Figma design
+   (2026-07-31 revision, node 150:553 / copy 778:1255: zebra dropped, plain
+   white rows, per-car CTA stacks) + 2026-08-05 Adam round: gold stars,
+   global-button CTAs, in-stock band removed. Site font stack (Poppins)
+   inherited. All state changes are class-driven (no inline styles).
+
+   2026-08-05 (Adam ask): colours/radii reference the site's published Webflow
+   variables wherever one exists, with hard-coded fallbacks for the demo and
+   protos, which don't load the Webflow stylesheet. */
+
+:root {
+  --wd-compare-red: var(--_ebbett-colors---ebbett-red, #c4161c);
+  --wd-compare-grey: var(--_ebbett-colors---ebbett-grey, #404040);
+  /* EM-237/EM-244: the site's primary-button hover red (ebbett-red-140) */
+  --wd-compare-red-dark: var(--_ebbett-colors---ebbett-red-140, #8e1014);
+  --wd-compare-line: var(--_ebbett-colors---ebbett-grey-20, #d9d9d9);
+  /* global .button geometry (Webflow "border-radius medium" + "border-width
+     normal" variables) — Adam 2026-08-05: no more fully-round CTA pills */
+  --wd-compare-radius: var(--_sizes---border-radius--medium, 0.625rem);
+  --wd-compare-border-w: var(--_sizes---border-width--normal, 0.15rem);
+  /* smaller radii derive from the same site variable with a multiplier — the
+     site's border-radius small/large are both 0px, so mapping onto them would
+     square off every thumbnail and chip (2026-08-06 token pass) */
+  --wd-compare-radius-sm: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.6); /* 6px */
+  --wd-compare-radius-xs: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.4); /* 4px */
+  --wd-compare-radius-xxs: calc(var(--_sizes---border-radius--medium, 0.625rem) * 0.2);/* 2px */
+  /* remaining greys/tints, bound 2026-08-06 */
+  --wd-compare-white: var(--_ebbett-colors---white, #fff);
+  --wd-compare-surface: var(--_ebbett-colors---ebbett-grey-10, #ececec); /* thumbs, sticky bar */
+  --wd-compare-muted: var(--_ebbett-colors---ebbett-grey-80, #666);      /* variant line */
+  --wd-compare-faint: var(--_ebbett-colors---ebbett-grey-60, #8c8c8c);   /* counts, missing values */
+  --wd-compare-label: var(--_ebbett-colors---ebbett-grey-40, #b3b3b3);   /* spec labels */
+  --wd-compare-ink: var(--_ebbett-colors---ebbett-grey-160, #1a1a1a);    /* spec values */
+  --wd-compare-notice-bg: var(--_ebbett-colors---ebbett-red-10, #f9e8e9);
+  --wd-compare-notice-line: var(--_ebbett-colors---ebbett-red-20, #f3d0d2);
+  /* measured from the real nav at runtime (ui/page.js applyStickyTop) */
+  --wd-compare-sticky-top: 0px;
+  --wd-compare-z: 900;
+  /* stars: the stock/product pages' gold star assets (Start-Gold-*.svg fill
+     #ff8000 = the site's attention-offer variable) — Adam 2026-08-05,
+     superseding the 2026-07-31 design's red */
+  --wd-compare-star-fill: var(--_ebbett-colors---system--attention-offer, #ff8000);
+  --wd-compare-star-empty: var(--_ebbett-colors---ebbett-grey-20, #dcdcdc);
+  /* one shared column system: slots, sticky bar, tables and CTA rows all use
+     the same 3 tracks + gap so every section's columns align under their car.
+     (The repeat(3, minmax(...)) expression is inlined at each use site — a
+     var() inside a :root custom property would freeze col-min at 0px.) */
+  --wd-compare-gap: 1.5rem;
+  --wd-compare-col-min: 0px; /* raised on small screens → tables side-scroll */
+}
+
+/* ---------- grid-card add button ---------- */
+
+/* EM-240 (Vanessa/Su-Anne, 2026-09-07): the injected button now REPLACES the
+   card's "View details" arrow — bottom-right of the card, same 2rem circle,
+   same 1rem inset (the whole card is already the link). It used to sit
+   top-right on the image, where it collided with the "Save $X" tab and
+   had to drop below it on discounted cars only, so the buttons never lined
+   up across a row. The host is the card itself (cards.js). Authored
+   [data-wd-compare-btn] buttons are untouched — Designer-owned. */
+.wd-compare_add-host { position: relative; }
+
+.wd-compare_add-host .stock-selector_button.wd-view-details,
+.wd-compare_add-host .button.is-news-link { display: none; }
+
+.wd-compare_add {
+  position: absolute;
+  top: auto;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--wd-compare-white);
+  color: var(--wd-compare-grey);
+  padding: 0.45rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+  font: inherit;
+  line-height: 1;
+}
+
+.wd-compare_add-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  transition: max-width 0.25s ease, padding 0.25s ease;
+}
+
+.wd-compare_add:hover .wd-compare_add-label,
+.wd-compare_add:focus-visible .wd-compare_add-label,
+.wd-compare_add.is-added .wd-compare_add-label {
+  max-width: 10rem;
+  padding: 0 0.35rem 0 0.5rem;
+}
+
+.wd-compare_add-icon { display: inline-flex; }
+.wd-compare_add-tick { display: none; }
+.wd-compare_add.is-added { background: var(--wd-compare-grey); color: var(--wd-compare-white); }
+.wd-compare_add.is-added .wd-compare_add-plus { display: none; }
+.wd-compare_add.is-added .wd-compare_add-tick { display: block; }
+
+.wd-compare_add.is-rejected { animation: wd-compare-shake 0.4s; }
+
+@keyframes wd-compare-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ---------- tray (v2: bottom-right bar, panel expands upward) ---------- */
+
+.wd-compare-tray {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 0;
+  z-index: var(--wd-compare-z);
+  width: min(414px, calc(100vw - 3rem));
+  /* the closed (hidden) panel still occupies layout space for the open
+     transition — the container must not hit-test over the page behind it */
+  pointer-events: none;
+}
+
+.wd-compare-tray_bar,
+.wd-compare-tray_panel { pointer-events: auto; }
+
+.wd-compare-tray.is-empty { display: none; }
+.wd-compare-tray.is-nudged { animation: wd-compare-shake 0.4s; }
+
+/* EM-237 (Vanessa, design "image (19).png", 2026-09-03): the collapsed bar is
+   Ebbett red with white text — the white-on-white v2 bar disappeared against
+   the page. Count badge inverts (white disc, red number). */
+.wd-compare-tray_bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  background: var(--wd-compare-red);
+  border: none;
+  border-radius: var(--wd-compare-radius) var(--wd-compare-radius) 0 0;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1.25rem;
+  cursor: pointer;
+  font: inherit;
+  color: var(--wd-compare-white);
+  transition: background-color 0.2s ease;
+}
+
+.wd-compare-tray_bar:hover,
+.wd-compare-tray_bar:focus-visible { background: var(--wd-compare-red-dark); }
+
+.wd-compare-tray_bar-label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.wd-compare-tray_count {
+  background: var(--wd-compare-white);
+  color: var(--wd-compare-red);
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.wd-compare-tray_bar-chevron { margin-left: auto; display: inline-flex; transition: transform 0.2s ease; }
+.wd-compare-tray.is-open .wd-compare-tray_bar-chevron { transform: rotate(180deg); }
+
+.wd-compare-tray_panel {
+  background: var(--wd-compare-white);
+  border: 1px solid var(--wd-compare-line);
+  border-bottom: none;
+  border-radius: var(--wd-compare-radius) var(--wd-compare-radius) 0 0;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18);
+  padding: 1.25rem;
+  /* closed: kept in the DOM so open/close can animate (visibility blocks
+     interaction + accessibility while hidden) */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.wd-compare-tray.is-open .wd-compare-tray_panel {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.wd-compare-tray.is-open .wd-compare-tray_bar { border-radius: 0; box-shadow: none; }
+
+.wd-compare-tray_added { color: var(--wd-compare-faint); font-size: 0.875rem; margin: 0 0 1rem; }
+
+/* EM-94: panel close button (top-right of the expanded panel) */
+.wd-compare-tray_panel { position: relative; }
+.wd-compare-tray_close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--wd-compare-faint);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.wd-compare-tray_close:hover,
+.wd-compare-tray_close:focus-visible {
+  background: var(--wd-compare-line);
+  color: var(--wd-compare-ink, currentColor);
+}
+
+.wd-compare-tray_list { list-style: none; margin: 0; padding: 0; }
+
+.wd-compare-tray_item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.wd-compare-tray_thumb {
+  width: 108px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: var(--wd-compare-radius-xxs);
+  background: var(--wd-compare-surface);
+  flex: none;
+}
+
+.wd-compare-tray_thumb.is-placeholder { display: block; }
+.wd-compare-tray_item-text { flex: 1; min-width: 0; }
+.wd-compare-tray_item-name { display: block; font-weight: 600; }
+
+.wd-compare-tray_item-variant {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--wd-compare-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wd-compare-tray_remove,
+.wd-compare_slot-remove,
+.wd-compare_sticky-remove {
+  border: 1px solid var(--wd-compare-line);
+  background: var(--wd-compare-white);
+  border-radius: var(--wd-compare-radius-xs);
+  width: 1.75rem;
+  height: 1.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--wd-compare-grey);
+  flex: none;
+}
+
+/* tray's own remove chip is grey-on-white (design Compare-tab-v2) */
+.wd-compare-tray_remove { background: var(--wd-compare-surface); border: none; border-radius: var(--wd-compare-radius-xxs); }
+
+.wd-compare-tray_add-more {
+  display: block;
+  text-align: center;
+  border: 1px dashed rgba(26, 27, 31, 0.5);
+  border-radius: var(--wd-compare-radius-xxs);
+  color: var(--wd-compare-ink);
+  font-size: 0.875rem;
+  text-decoration: none;
+  padding: 1.35rem;
+  margin: 0.75rem 0 1rem;
+}
+
+/* primary CTA = the site's global .button primary look (Webflow variables) */
+.wd-compare-tray_cta,
+.wd-compare_cta.is-primary {
+  display: block;
+  text-align: center;
+  background: var(--button--primary-background, var(--wd-compare-red));
+  color: var(--button--primary-text, #fff);
+  border: var(--wd-compare-border-w) solid var(--button--primary-border, var(--wd-compare-red));
+  border-radius: var(--wd-compare-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: var(--_typography---small, 0.8rem);
+  line-height: var(--_typography---line-height--small, 1.2rem);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.55rem 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* EM-244 (Alex): the site's global `a:hover { color: var(--<deleted var>) }`
+   resolves to nothing, so the CTA's text fell back to inherited black on the
+   red. Explicit hover = the global .button hover (darker red, white text). */
+.wd-compare-tray_cta:hover,
+.wd-compare-tray_cta:focus-visible,
+.wd-compare_cta.is-primary:hover,
+.wd-compare_cta.is-primary:focus-visible {
+  background: var(--button--primary-background-hover, var(--wd-compare-red-dark));
+  border-color: var(--button--primary-border-hover, var(--wd-compare-red-dark));
+  color: var(--button--primary-text-hover, var(--wd-compare-white));
+  text-decoration: none;
+}
+
+.wd-compare-tray_add-more:hover,
+.wd-compare-tray_add-more:focus-visible {
+  color: var(--wd-compare-ink);
+  text-decoration: none;
+}
+
+/* ---------- compare page ---------- */
+
+/* EM-246 (Josi, 8 Sep): the hero's white card carries the sitewide utility
+   pair `margin-bottom margin-medium` (2rem), which left a grey strip between
+   it and our panel. Zeroed ONLY on a page that mounts the compare tool
+   (:has on body) — the utility classes are untouched everywhere else. */
+body:has([data-wd-component="compare-page"]) .content-card_default.margin-bottom.margin-medium {
+  margin-bottom: 0;
+}
+
+/* bottom padding is back on the shell — it used to be carried by the
+   (removed) full-bleed in-stock band. The "Return to all stock" affordance is
+   a hero-component button on the Webflow page (Josi 2026-08-05), so no back
+   link is styled here. */
+/* EM-246 (Vanessa, 2026-09-08): the /compare page wrapper lost its
+   `page-bg-white` class (Josi, Designer), so the page sits on the site grey
+   like every other page. The comparison tool now carries its own white panel
+   with padding, the way the white filter box does on /offers and /stock/all;
+   the panel hugs the hero's white card above it. */
+.wd-compare_page {
+  /* same box as the hero's white card: .padding-global side gutters +
+     .container-medium max width, and the card's own inner padding — all
+     Webflow variables, so they follow the site's breakpoints */
+  width: min(var(--_sizes---container--medium, 80rem), calc(100% - 2 * var(--_sizes---container--padding-global, 1.25rem)));
+  margin: 0 auto 4rem;
+  padding: 0.5rem var(--_sizes---container--padding-regular, 2.5rem) var(--_sizes---container--padding-regular, 2.5rem);
+  background: var(--wd-compare-white);
+  border-radius: 0 0 var(--wd-compare-radius-sm) var(--wd-compare-radius-sm);
+}
+
+.wd-compare_count { color: var(--wd-compare-grey); margin: 1.5rem 0 0.75rem; }
+
+.wd-compare_notice {
+  background: var(--wd-compare-notice-bg);
+  border: 1px solid var(--wd-compare-notice-line);
+  border-radius: var(--wd-compare-radius-sm);
+  color: var(--wd-compare-grey);
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.wd-compare_slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--wd-compare-col-min), 1fr));
+  gap: var(--wd-compare-gap);
+  align-items: stretch;
+}
+
+.wd-compare_slot { position: relative; display: flex; flex-direction: column; min-height: 20rem; }
+
+.wd-compare_slot.is-empty {
+  border: 2px dashed var(--wd-compare-red);
+  border-radius: var(--wd-compare-radius-xs);
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font: inherit;
+}
+
+.wd-compare_slot-add-label {
+  color: var(--wd-compare-red);
+  border: 1px dashed var(--wd-compare-red);
+  border-radius: var(--wd-compare-radius-xs);
+  padding: 0.6rem 1.1rem;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.wd-compare_slot-media { position: relative; }
+
+.wd-compare_slot-image {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--wd-compare-radius-xxs);
+  background: var(--wd-compare-surface);
+}
+
+.wd-compare_slot-region {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  color: var(--wd-compare-white);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.wd-compare_slot-remove { position: absolute; top: 0.6rem; right: 0.6rem; }
+
+.wd-compare_slot-title { margin: 1rem 0 0.25rem; font-size: 1.25rem; }
+.wd-compare_slot-variant { margin: 0 0 0.35rem; color: var(--wd-compare-grey); }
+.wd-compare_slot-meta { margin: 0; color: var(--wd-compare-grey); font-size: 0.9rem; }
+
+.wd-compare_slot-pricing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.wd-compare_slot-price { font-weight: 700; font-size: 1.15rem; }
+.wd-compare_slot-orc { color: var(--wd-compare-faint); font-size: 0.8rem; }
+
+.wd-compare_slot-link {
+  margin-left: auto;
+  border: 1px solid var(--wd-compare-line);
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  color: var(--wd-compare-grey);
+}
+
+/* ---------- sticky mini-bar ---------- */
+
+.wd-compare_stickybar {
+  position: fixed;
+  top: var(--wd-compare-sticky-top);
+  left: 0;
+  right: 0;
+  background: var(--wd-compare-surface);
+  border-bottom: 1px solid var(--wd-compare-line);
+  z-index: calc(var(--wd-compare-z) - 1);
+  display: none;
+}
+
+.wd-compare_stickybar.is-visible { display: block; }
+
+/* same 3 tracks as the tables; on small screens the min track width kicks in
+   and the bar side-scrolls in sync with them (ui/page.js wireScrollSync) */
+.wd-compare_sticky-inner {
+  /* EM-246: same box as .wd-compare_page so the three tracks sit exactly
+     over the slot/table columns beneath (was the old 82rem / 1.25rem shell) */
+  width: min(var(--_sizes---container--medium, 80rem), calc(100% - 2 * var(--_sizes---container--padding-global, 1.25rem)));
+  margin: 0 auto;
+  padding: 0.6rem var(--_sizes---container--padding-regular, 2.5rem);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--wd-compare-col-min), 1fr));
+  gap: var(--wd-compare-gap);
+  overflow-x: auto;
+}
+
+.wd-compare_sticky-item { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+
+.wd-compare_sticky-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--wd-compare-radius-xs);
+  flex: none;
+}
+
+.wd-compare_sticky-name {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--wd-compare-grey);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* design: name › price × left-packed in the car's column (the sticky-bar
+   ENQUIRE went away 2026-08-03 with the return of the on-page CTA stacks) */
+.wd-compare_sticky-price { color: var(--wd-compare-grey); font-size: 0.9rem; }
+
+/* the design's sticky remove is a plain white square on the grey bar */
+.wd-compare_sticky-remove { border: none; border-radius: 0; }
+
+/* ---------- collapsible sections (Quick Specs + one per feature category) ---------- */
+
+.wd-compare_section { margin-top: 4rem; }
+.wd-compare_section.is-collapsible + .wd-compare_section.is-collapsible { margin-top: 1rem; }
+
+.wd-compare_heading {
+  font-size: 2rem;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--wd-compare-line);
+}
+
+.wd-compare_heading.is-centred { text-align: center; border: none; }
+
+.is-collapsible .wd-compare_heading { margin-bottom: 0; padding-bottom: 0; }
+
+.wd-compare_section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0 0 1.5rem;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.wd-compare_section-chevron { margin-left: auto; flex: none; transition: transform 0.2s ease; }
+.is-collapsible.is-open .wd-compare_section-chevron { transform: rotate(180deg); }
+
+.is-collapsible .wd-compare_section-body { display: none; }
+.is-collapsible.is-open .wd-compare_section-body { display: block; padding-top: 2rem; }
+
+/* tables side-scroll instead of squishing once --wd-compare-col-min kicks in;
+   ui/page.js keeps every scroller's position in sync */
+.wd-compare_table-scroll { overflow-x: auto; }
+
+.wd-compare_table-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--wd-compare-col-min), 1fr));
+  column-gap: var(--wd-compare-gap);
+}
+
+/* 2026-07-31 design: plain white rows — no zebra, no table border. Values sit
+   flush with their car's column edge. */
+.wd-compare_table .wd-compare_spec-cell {
+  padding: 0.625rem 0;
+  min-width: 0;
+}
+
+.wd-compare_spec-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--wd-compare-label);
+  margin-bottom: 0.15rem;
+}
+
+.wd-compare_spec-value { display: block; margin: 0; color: var(--wd-compare-ink); font-weight: 500; }
+.wd-compare_spec-value.is-missing { color: var(--wd-compare-faint); }
+/* star cells (Energy economy / Carbon emissions) run their value line smaller */
+.wd-compare_spec-cell:has(.wd-compare_stars) .wd-compare_spec-value { font-size: 0.875rem; color: var(--wd-compare-grey); }
+.wd-compare_spec-sub { display: block; font-size: 0.75rem; color: var(--wd-compare-faint); margin-top: 0.2rem; }
+.wd-compare_spec-sub strong { color: var(--wd-compare-grey); font-weight: 600; }
+.wd-compare_spec-link { display: inline-block; color: var(--wd-compare-faint); font-size: 0.75rem; margin-top: 0.2rem; }
+
+/* stars: stock/product-page gold halves (Adam 2026-08-05; fill via :root) */
+.wd-compare_stars { display: inline-flex; gap: 0.1rem; margin: 0.15rem 0; }
+.wd-compare_stars-missing { display: block; color: var(--wd-compare-faint); }
+.wd-compare_star path { fill: var(--wd-compare-star-fill); }
+.wd-compare_star.is-half .wd-compare_star-right,
+.wd-compare_star.is-empty path { fill: var(--wd-compare-star-empty); }
+
+/* non-applicable (e.g. fuel use on an EV) — distinct from "—" no data */
+.wd-compare_spec-value.is-na { color: var(--wd-compare-faint); font-weight: 500; }
+
+.wd-compare_features-note {
+  color: var(--wd-compare-faint);
+  font-size: 0.8rem;
+  margin: 0.75rem 0 0;
+}
+
+/* no separator line between the final collapsed section and the note below it */
+.wd-compare_section.is-collapsible.is-last:not(.is-open) .wd-compare_heading { border-bottom: none; }
+
+/* per-car CTA stacks below Quick Specs and below the features block
+   (2026-08-03 design revert): pill buttons on the shared 3-track grid */
+.wd-compare_cta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--wd-compare-col-min), 1fr));
+  column-gap: var(--wd-compare-gap);
+  margin-top: 2.5rem;
+}
+
+.wd-compare_ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/* secondary CTA = the global .button.is-secondary look; radius/border/type
+   sizes ride the same Webflow variables (fully-round pills dropped —
+   Adam 2026-08-05) */
+.wd-compare_cta {
+  display: inline-block;
+  text-align: center;
+  border: var(--wd-compare-border-w) solid var(--button--secondary-border, var(--wd-compare-grey));
+  border-radius: var(--wd-compare-radius);
+  background: var(--wd-compare-white);
+  color: var(--button--secondary-text, var(--wd-compare-grey));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: var(--_typography---small, 0.8rem);
+  font-weight: 600;
+  line-height: var(--_typography---line-height--small, 1.2rem);
+  text-decoration: none;
+  padding: 0.5rem 1.25rem 0.4rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.wd-compare_cta.is-primary { border-color: var(--button--primary-border, var(--wd-compare-red)); }
+
+/* EM-244 follow-through: secondary CTAs keep their grey text on hover too */
+.wd-compare_cta:not(.is-primary):hover,
+.wd-compare_cta:not(.is-primary):focus-visible {
+  background: var(--button--secondary-background-hover, var(--wd-compare-surface));
+  color: var(--button--secondary-text-hover, var(--wd-compare-grey));
+  text-decoration: none;
+}
+
+/* 2026-08-05: the "currently in stock" section is gone entirely (grey band +
+   grid per Adam, then the leftover button too per Josi — its red clashed with
+   the enquire CTAs). The removed markup is archived on the dev Webflow page
+   "Unused comparison tool components"; the old styling lives in git history. */
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 767px) {
+  .wd-compare_page { --wd-compare-col-min: 10rem; }
+  /* size the table box to its 3 min tracks + gaps so the rows lay out at full
+     track width inside the scroll container */
+  .wd-compare_table,
+  .wd-compare_cta-row { min-width: calc(3 * var(--wd-compare-col-min) + 2 * var(--wd-compare-gap)); }
+  /* slot cards sit side by side and scroll with the tables */
+  .wd-compare_slots { overflow-x: auto; }
+  .wd-compare_slot { min-height: 12rem; }
+  /* sticky entries drop to the design's stacked format: name / price / × */
+  .wd-compare_sticky-item { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+  .wd-compare_sticky-thumb { display: none; }
+}
+
+@media (max-width: 640px) {
+  /* EM-246: panel bottom gap on phones */
+  .wd-compare_page { margin-bottom: 2.5rem; }
+  /* EM-148: centre the tray on phones (it was right-anchored — 31px gap left,
+     10px right at 390px). left+right+auto margins, not a transform: the
+     is-nudged shake animates transform and would fight it. */
+  .wd-compare-tray { left: 0; right: 0; margin-inline: auto; }
+}
+
+/* ---- 2026-07-31 Webflow-editable scaffold support ---------------------- */
+
+/* authored template library on the compare page: never rendered directly */
+[data-wd-compare-templates] { display: none !important; }
+

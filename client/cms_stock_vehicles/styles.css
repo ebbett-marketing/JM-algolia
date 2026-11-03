@@ -1,0 +1,134 @@
+/* Webflow variable bindings (Adam 2026-08-06). This file previously referenced
+   --regular-size, --x-small-size, --x-small-height and --dim-grey, which are
+   LIVE-site variable names that do not exist on dev — so on dev the font sizes
+   silently fell back to inherited and `background-color: var(--dim-grey)` was
+   invalid-at-computed-value-time, painting the table headers transparent with
+   white text on them. All four are re-bound to their dev equivalents below. */
+:root {
+    --wd-stock-white: var(--_ebbett-colors---white, #fff);
+    --wd-stock-surface: var(--_ebbett-colors---ebbett-grey-10, #ececec);
+    --wd-stock-th-bg: var(--_ebbett-colors---ebbett-grey-80, #666);
+    --wd-stock-text: var(--_typography---regular, 1rem);
+    --wd-stock-text-sm: var(--_typography---small, 0.8rem);
+    --wd-stock-line-sm: var(--_typography---line-height--small, 1.2rem);
+}
+
+.stock_features-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.stock_detail-content .stock_features-container {
+    flex-direction: column;
+}
+
+.stock_features-category {
+    display: flex;
+    flex-direction: column;
+    width: 33.33%;
+}
+
+.stock_detail-content .stock_features-category {
+    width: 100%;
+}
+
+.stock_features-category ul {
+    flex-direction: column;
+    column-count: 1;
+    margin-top: 0.5rem;
+    font-size: var(--wd-stock-text);
+}
+
+.stock_features-container h3 {
+    margin-bottom: 0;
+    font-size: var(--wd-stock-text);
+}
+
+@media screen and (max-width: 767px) {
+    .stock_features-container {
+        flex-direction: column;
+    }
+    
+    .stock_features-category {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .stock_features-category ul {
+        column-count: 2;
+        column-gap: 2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .stock_features-category ul {
+        column-count: 1;
+    }
+}
+
+.splide button:disabled {
+    opacity: 0;
+}
+
+markdown {
+    display: none;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 10px 10px;
+    margin-left: -10px;
+    width: 100%;
+    font-size: var(--wd-stock-text-sm);
+    line-height: var(--wd-stock-line-sm);
+}
+
+.markdown-table-small table {
+    width: 100%;
+    max-width: 45rem;
+    margin: 0 auto;
+}
+
+.markdown-table-text-align-center table,
+.markdown-table-text-align-center th,
+.markdown-table-text-align-center td {
+    text-align: center !important;
+}
+
+th {
+    padding: 1rem;
+    margin-bottom: 5px;
+    background-color: var(--wd-stock-th-bg);
+    color: var(--wd-stock-white);
+    margin-right: 10px;
+}
+
+td {
+    padding: 1rem;
+    background-color: var(--wd-stock-surface);
+}
+
+ss-vehicle_image-hero {
+    height: 100%;
+}
+
+div[data-gallery="position-1"] img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    object-position: 50% 50%;
+}
+
+div[data-gallery="item"] {
+    height: 100%;
+}
+
+div[data-gallery="position-2"] img,
+div[data-gallery="position-3"] img,
+div[data-gallery="position-4"] img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    object-position: 50% 50%;
+}
