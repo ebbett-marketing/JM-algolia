@@ -26,12 +26,11 @@ The first commit that adds `client/` is the unchanged copy; the JM changes are i
 | `cap_stock-meta` | core-edge `cap_stock-meta/_v1.0.0` | `/inventory/*` | `client.ebbett.co.nz/cap_stock-meta/dev/` |
 | `cap_forms` | core-edge `cap_forms/v1.0.0` (`form.js`, `uploader.css`) | `/inventory/*`, `/offers/*`, `/model/*` | `files.ebbett.co.nz/…/form.js`, `uploader.css`; `client.ebbett.co.nz/cap_forms/dev/uploader.css` |
 | `cms_offers` | core-edge `cms_offers/v1.0.0` | `/offers/*` | `files.ebbett.co.nz/…/offers-footer.js` |
-| `lib_splide` | core-edge `lib_splide/v1.0.0` (`styles-ebbett.css` → `styles.css`) | `/offers/*` | `files.ebbett.co.nz/…/splide-ebbett.css` |
+| `lib_splide` | core-edge `lib_splide/v1.0.0` (`styles-ebbett.css` → `styles.css`) | `/offers/*`, `/news/*` | `files.ebbett.co.nz/…/splide-ebbett.css` |
 | `cap_dealership-filter` | core-edge `cap_dealership-filter/v1.0.0` (`filter.js`) | `/`, `/dealerships` | `files.ebbett.co.nz/scripts/dealership-filter.js` |
 | `cms_dealership` | files.ebbett.co.nz `dealership-footer.js`, `languages.json` | `/dealership/*` | same files |
 | `cms_brands` | files.ebbett.co.nz `brands-footer.js` | `/brand/*` | same file |
 | `cms_vehicle-models` | core-edge `cms_vehicle-models/v1.0.0` (`footer-early.js`, `footer-late.js`) | `/model/*` | `files.ebbett.co.nz/…/vehicle-models-footer-first.js`, `-last.js` |
-| `page_finance` | core-edge `page_ebbett-finance/v1.0.0` | `/johnston-motors-finance` | `files.ebbett.co.nz/…/ebbett-finance-footer-last.js` |
 | `lib_gmaps` | core-edge `lib_gmaps/v1.0.0` (`locator.js`) | `/service` | `files.ebbett.co.nz/…/google-maps-core.js` |
 
 `…` is `files.ebbett.co.nz/scripts/ebbett.co.nz`.
@@ -47,6 +46,8 @@ The first commit that adds `client/` is the unchanged copy; the JM changes are i
 | `site-header.js` | Empty file on Ebbett's server |
 | `ev-range-footer.js` | Returns 404 on Ebbett's server |
 | `select2.js` | Only referenced inside an HTML comment; `cap_dropdown` replaced it |
+| `ebbett-finance-footer-last.js` (core-edge `page_ebbett-finance`) | Commented out on the finance page ("old functionality") |
+| `stock-selector-footer.js`, `product-header.js`, `product-footer.js` | Only on `/dev/our-vehicle-stock` and the old e-commerce `/product` template, which JM doesn't use |
 
 ## Pages Johnston Motors may drop
 
@@ -57,6 +58,5 @@ HNDRX hasn't confirmed which of the duplicated page groups JM keeps. If one goes
 | `/dealerships` and `/dealership/*` | `cms_dealership`, and `cap_dealership-filter` unless the home page still uses it |
 | `/brand/*` | `cms_brands` |
 | `/model/*` | `cms_vehicle-models` (and `cap_forms/uploader.css` if no other page uses it) |
-| `/johnston-motors-finance` | `page_finance` |
 | `/service` | `lib_gmaps` |
-| `/offers/*` | `cms_offers`, `lib_splide` |
+| `/offers/*` | `cms_offers`, and `lib_splide` unless `/news/*` still uses it |

@@ -1,21 +1,23 @@
-// Clears jsDelivr's cache of client/ files on `main`, so staging picks up a push straight away
-// instead of within 12 hours. Pinned release URLs (@v1.2.3) never change, so they never need it.
+// Clears jsDelivr's cache of client/ files for a version range, so the site picks up a new release
+// tag straight away instead of within hours. Exact release URLs (@v1.2.3) never change, so they
+// never need it.
 //
-//   node tools/purge-jsdelivr.mjs                 every file under client/
+//   node tools/purge-jsdelivr.mjs                 every file under client/, for @0.1 (staging)
 //   node tools/purge-jsdelivr.mjs client/a.js …   just these (paths relative to the repo)
-//   node tools/purge-jsdelivr.mjs --ref v1.2.3    another branch or tag instead of main
+//   node tools/purge-jsdelivr.mjs --ref 1         another range, branch or tag
 //
 // Purge every file, not only the changed ones: modules import each other by relative path, and a
-// half-purged set can mix old and new versions of the same release.
+// half-purged set can mix two releases.
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const REPO = 'ebbett-marketing/JM-algolia';
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 
 const args = process.argv.slice(2);
 const refAt = args.indexOf('--ref');
-const ref = refAt > -1 ? args.splice(refAt, 2)[1] : 'main';
+const ref = refAt > -1 ? args.splice(refAt, 2)[1] : '0.1';
 
 async function walk(dir) {
   const out = [];

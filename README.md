@@ -17,18 +17,29 @@ stock search, comparison and navigation search. Adapted from the Ebbett 3.0 site
 | `tools/test-extractor.mjs` | Runs the crawler's record extractor against the live site, no Algolia needed |
 | `tools/crawler.mjs` | Pushes the crawler config, starts a crawl, shows status |
 | `tools/algolia-settings.mjs` | Applies (or `--check`s) the index settings |
-| `tools/purge-jsdelivr.mjs` | Clears jsDelivr's cache of `main` after a push |
+| `tools/purge-jsdelivr.mjs` | Clears jsDelivr's cache after a new release tag |
 
 ## How the site loads the scripts
 
-Webflow's custom code and embeds point at jsDelivr, which serves files straight from this repo:
+Webflow's custom code and embeds point at jsDelivr, which serves files straight from this repo's
+release tags:
 
 ```
-https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@main/client/cap_search/embed.js
+https://cdn.jsdelivr.net/gh/ebbett-marketing/JM-algolia@0.1/client/cap_search/embed.js
 ```
 
-Staging uses `@main`. jsDelivr caches a branch for up to 12 hours, so run `node tools/purge-jsdelivr.mjs`
-after each push. The live site uses a tagged release (`@v1.0.0`), which never changes once published.
+Staging loads `@0.1`, which jsDelivr resolves to the newest `v0.1.x` tag. To release to staging,
+tag the commit and purge:
+
+```bash
+git tag v0.1.3 && git push origin v0.1.3
+node tools/purge-jsdelivr.mjs        # otherwise jsDelivr can take hours to notice the new tag
+```
+
+A tag's files never change, so a slow jsDelivr edge serves the previous release, never a mix or a
+404. At launch the live site pins one exact release (`@v1.0.0`); a new live release means tagging it
+and updating those URLs in Webflow. Don't point Webflow at `@main`: jsDelivr caches a branch's
+commit for up to 12 hours on some servers, and a purge doesn't always clear it.
 
 ## How stock gets into search
 
@@ -61,5 +72,5 @@ npm run test:extractor                         # check every vehicle page extrac
 node tools/crawler.mjs push <crawlerId>        # after editing crawler/stock.config.js
 node tools/crawler.mjs reindex <crawlerId>     # crawl now instead of waiting for the daily run
 node tools/algolia-settings.mjs --check        # live index settings vs the JSON files
-node tools/purge-jsdelivr.mjs                  # after pushing to main, so staging gets the change
+node tools/purge-jsdelivr.mjs                  # after pushing a v0.1.x tag, so staging gets it
 ```
