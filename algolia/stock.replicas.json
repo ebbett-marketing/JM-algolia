@@ -1,0 +1,63 @@
+{
+  "stock_price_asc": {
+    "customRanking": [
+      "asc(price_current_number)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_price_desc": {
+    "customRanking": [
+      "desc(price_current_number)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_year_asc": {
+    "customRanking": [
+      "asc(year)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_year_desc": {
+    "customRanking": [
+      "desc(year)",
+      "desc(autoplay_created_date)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_created_asc": {
+    "customRanking": [
+      "asc(autoplay_created_date)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_created_desc": {
+    "customRanking": [
+      "desc(autoplay_created_date)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_savings_desc": {
+    "customRanking": [
+      "desc(price_savings_number)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_odometer_asc": {
+    "customRanking": [
+      "asc(odometer)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_odometer_desc": {
+    "customRanking": [
+      "desc(odometer)"
+    ],
+    "relevancyStrictness": 99
+  },
+  "stock_popularity_desc": {
+    "customRanking": [
+      "desc(pageViews)"
+    ],
+    "relevancyStrictness": 99
+  }
+}

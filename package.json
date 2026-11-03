@@ -1,0 +1,12 @@
+{
+  "name": "jm-algolia",
+  "private": true,
+  "type": "module",
+  "description": "Johnston Motors website scripts (served via jsDelivr) and Algolia Crawler config",
+  "scripts": {
+    "test:extractor": "node tools/test-extractor.mjs"
+  },
+  "devDependencies": {
+    "cheerio": "1.0.0"
+  }
+}
