@@ -41,3 +41,8 @@ export function isSiteHost(hostname) {
 // Johnston Motors wants Algolia's click analytics; turning it on sets Algolia's
 // anonymous user cookie.
 export const INSIGHTS = false;
+
+// Ebbett's Pre-Owned Promise programme (banner on used-stock results, the
+// "Pre-Owned Promise" filter and quick-filter chip). Johnston Motors isn't part of
+// it, so it's off: no banner, no Promise filter or chip on the stock pages.
+export const PRE_OWNED_PROMISE = false;

@@ -53,14 +53,5 @@ var search = window.location.search;
     }
   }
 
-  $(document).ready(function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    var utmCampaign = urlParams.get('utm_campaign');
-    
-    if (utmCampaign && utmCampaign.startsWith('group_used_cars')) {
-        var $element = $('.section_header.is-vehicle-stock');
-        if ($element.length) {
-            $element.css('background-image', 'linear-gradient(#0000 55%, #00000080 70%), url("https://files.ebbett.co.nz/images/group_used_car.jpg")');
-        }
-    }
-});
+// JM: Ebbett's "group_used_cars" campaign header image (files.ebbett.co.nz) removed.
+// The stock page header image comes from the Stock | Pages CMS item ("Image - Header").

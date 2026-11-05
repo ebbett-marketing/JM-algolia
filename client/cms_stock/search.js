@@ -1,6 +1,6 @@
 // JM: Algolia app, key and Insights setting from client/config.js. The stock
 // index and its sort replicas keep Ebbett's names (stock, stock_price_asc, …).
-import { ALGOLIA, INDICES, INSIGHTS } from '../config.js';
+import { ALGOLIA, INDICES, INSIGHTS, PRE_OWNED_PROMISE } from '../config.js';
 import { waitForInstantSearch } from '../lib_algolia/core/wait-for-instantsearch.js';
 import { encodeValue, decodeValue, safeJSONParse } from '../lib_algolia/core/url-codec.js';
 import { createDropdown } from '../lib_algolia/widgets/dropdown.js';
@@ -584,6 +584,10 @@ function hitsIncludeCondition(results, targetCondition) {
 }
 
 function isPreOwnedPromiseEligible(state, results) {
+    // JM: not in Ebbett's Pre-Owned Promise programme (config.js), so the banner never shows.
+    if (!PRE_OWNED_PROMISE) {
+        return false;
+    }
     if (!state || !results) {
         return false;
     }
@@ -846,7 +850,7 @@ search.addWidgets([
         }
     })] : []),
 
-    ...(document.querySelector('#ais_filter-check-3') ? [createFilterCheckboxWidget({
+    ...(PRE_OWNED_PROMISE && document.querySelector('#ais_filter-check-3') ? [createFilterCheckboxWidget({
         container: document.querySelector('#ais_filter-check-3'),
         config: {
         type: 'facet',
@@ -1092,7 +1096,11 @@ if (quickFiltersEl) {
     // Presets come from the hidden "Search | Quick Filters" collection list when
     // present (client-editable, goes live on publish); config list is the fallback.
     const cmsPresets = parsePresetsFromDOM(document.querySelector('#ais_quick-filters-data'));
-    createQuickFilters({ container: quickFiltersEl, search, presets: cmsPresets.length ? cmsPresets : DEFAULT_QUICK_FILTERS });
+    // JM: drop any Pre-Owned Promise chip while the programme is off (config.js).
+    const isPromiseChip = (preset) => Object.keys(preset.facets ?? {}).includes('is_pre_owned_promise');
+    const presets = (cmsPresets.length ? cmsPresets : DEFAULT_QUICK_FILTERS)
+        .filter((preset) => PRE_OWNED_PROMISE || !isPromiseChip(preset));
+    createQuickFilters({ container: quickFiltersEl, search, presets });
 }
 
 // Card meta (ClickUp + Adam 2026-07-18): views (eye icon) / weekly price beside
