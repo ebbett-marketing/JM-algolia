@@ -1,24 +1,61 @@
+// window.__CMS__ is set in the template head from CMS fields. Read it through CMS so a broken or missing
+// block can't stop the rest of this file (an empty Number binding once left it undefined on every page).
+var CMS = window.__CMS__ || {};
+
 $(document).ready(function() {
 
-    // === Gallery setup ===
+    // === Gallery (D5: Webflow-hosted photos) ===
+    // The template has a hidden collection list on the vehicle's "Gallery" field, one
+    // [data-gallery="item"] (with an <img>) per photo. The first four photos fill the hero and side slots
+    // ([data-gallery="position-1..4"]); every photo opens in the lightbox. The list's images are lazy, so
+    // only the photos on show (and any opened in the lightbox) are downloaded. With no gallery photos, the
+    // hero falls back to the main image.
 
-    $('.ss-vehicle_image-button').click(function() {
-        $('[data-gallery="position-1"] .stock_cms-gallery-image').click();
+    var vehicleName = '';
+    try {
+        vehicleName = JSON.parse(document.getElementById('wd-algolia-record').textContent).name || '';
+    } catch (e) { /* record block missing: no alt text */ }
+
+    var $galleryItems = $('[data-gallery="item"]');
+    var photos = $galleryItems.find('img').map(function() { return this.getAttribute('src'); }).get()
+        .filter(Boolean);
+    if (!photos.length && CMS.mainImage) {
+        var fallback = document.createElement('img');
+        fallback.src = CMS.mainImage;
+        $galleryItems = $('<div data-gallery="item"></div>').append(fallback);
+        photos = [CMS.mainImage];
+    }
+
+    $galleryItems.slice(0, 4).each(function(i) {
+        var img = $(this).find('img')[0];
+        if (img) {
+            img.classList.add('stock_cms-gallery-image');
+            img.alt = vehicleName ? vehicleName + ' photo ' + (i + 1) : '';
+            img.loading = i === 0 ? 'eager' : 'lazy';
+            if (i === 0) img.setAttribute('fetchpriority', 'high');
+        }
+        $('[data-gallery="position-' + (i + 1) + '"]').append(this);
     });
 
-    var galleryItems = $('[data-gallery="item"]').slice(0, 4).toArray();
-    galleryItems.forEach(function(item, i) {
-        $('[data-gallery="position-' + (i + 1) + '"]').append(item);
-    });
+    function openGallery(index) {
+        if (!photos.length || !$.magnificPopup) return;
+        $.magnificPopup.open({
+            items: photos.map(function(src) { return { src: src }; }),
+            type: 'image',
+            gallery: { enabled: true }
+        }, Math.max(0, index));
+    }
 
+    $(document).on('click', '.stock_cms-gallery-image', function() {
+        openGallery(photos.indexOf(this.getAttribute('src')));
+    });
+    $('.ss-vehicle_image-button').on('click', function() { openGallery(0); });
+    $('.ss-vehicle_image-overlay').on('click', function() { openGallery(3); });
+
+    // Ebbett's "proof" variant of the template (kept as it was).
     var proofItems = $('[data-gallery="item-proof"]').slice(0, 4).toArray();
     proofItems.forEach(function(item, i) {
         $('[data-gallery="position-' + (i + 1) + '-proof"]').append(item);
-    });
-
-    $('.stock_cms-gallery-image').magnificPopup({
-        type: 'image',
-        gallery: { enabled: true }
     });
 
     $('.stock_cms-gallery-image-proof').magnificPopup({
@@ -31,9 +68,9 @@ $(document).ready(function() {
     var $buyingGuidesSection = $("[data-buying-guides='wrapper']");
 
     // 1. Hide Pre-Owned Promise if the dealership isn't participating, vehicle isn't used, is a JLR yard, or is as-traded
-    var hasPreOwnedPromise = (window.__CMS__.dealershipCategories || '').toLowerCase().includes('pre-owned promise');
-    var hasUsedCar = (window.__CMS__.condition || '').trim().toLowerCase() === 'used';
-    var notJLRYards = window.__CMS__.yard !== '8811' && window.__CMS__.yard !== '11521';
+    var hasPreOwnedPromise = (CMS.dealershipCategories || '').toLowerCase().includes('pre-owned promise');
+    var hasUsedCar = (CMS.condition || '').trim().toLowerCase() === 'used';
+    var notJLRYards = CMS.yard !== '8811' && CMS.yard !== '11521';
 
     var hasAsTradedByEbbett = $("[data-cms-reference='comments'], [data-cms-reference='features'], [data-cms-reference='features-2']").filter(function() {
         return $(this).text().toLowerCase().includes('as traded by ebbett');
@@ -64,7 +101,7 @@ $(document).ready(function() {
         "alfa romeo", "bentley", "porsche", "corvette", "maserati", "lamborghini",
         "ferrari", "aston martin", "rolls-royce", "mclaren"];
 
-    var make = (window.__CMS__.make || '').trim().toLowerCase();
+    var make = (CMS.make || '').trim().toLowerCase();
     if (luxuryMakes.includes(make)) {
         $buyingGuidesSection.find("[data-buying-guide='service-select']").hide();
     }
@@ -130,7 +167,7 @@ $(document).ready(function() {
 
     if (typeof fbq === 'function') {
         fbq('track', 'ViewContent', {
-            content_ids: [window.__CMS__.sku],
+            content_ids: [CMS.sku],
             content_type: 'vehicle'
         });
     }
@@ -151,7 +188,8 @@ function removeElementsIfVinMatches() {
 
 
 function updateFinanceLinks() {
-    const listingPrice = document.querySelector('[data-listing-price]')?.textContent || '';
+    // Digits only: site_core may already have formatted the price as "$329,990" (data-edge-format).
+    const listingPrice = (document.querySelector('[data-listing-price]')?.textContent || '').replace(/[^0-9.]/g, '');
     const listingRego = document.querySelector('[data-listing-rego]')?.textContent || '';
 
     const calculateLink = document.getElementById('finance-calculate');
@@ -223,25 +261,3 @@ $(function() {
     });
 });
 
-
-// === PhotoSwipe lightbox ===
-
-// PhotoSwipe straight from npm (Ebbett served an unmodified copy of 5.4.4).
-import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js').then(({ default: PhotoSwipeLightbox }) => {
-    const lightbox = new PhotoSwipeLightbox({
-        gallery: '#product-gallery',
-        children: 'a',
-        pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
-    });
-
-    lightbox.addFilter('numItems', () => window.__CMS__.productImageNum);
-
-    lightbox.addFilter('itemData', (_itemData, index) => ({
-        src: `${window.__CMS__.imagePrefix}-${index}/gallery`,
-        width: 1440,
-        height: 1080
-    }));
-
-    lightbox.init();
-    window.pswpLightbox = lightbox;
-});

@@ -147,7 +147,8 @@ new Crawler({
           // URLs as-is, so the records survive the domain switch.
           url: url.pathname,
           mainImage: str(f.main_image),
-          image_count: null,
+          // D5: one [data-gallery="item"] per photo in the template's hidden "Gallery" collection list.
+          image_count: $('[data-gallery="item"]').length || null,
           region: regions,
           pageViews: gaViews != null ? gaViews : cmsViews != null ? cmsViews : 0,
           // Ebbett's Pre-owned Promise programme: only when the dealership lists it.

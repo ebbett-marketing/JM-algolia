@@ -132,3 +132,17 @@ div[data-gallery="position-4"] img {
     width: 100%;
     object-position: 50% 50%;
 }
+/* D5 gallery: footer.js moves the first four photos from the hidden "Gallery" collection list
+   ([data-gallery="list"]) into the hero and side slots, which already set the 16:10 frame. */
+[data-gallery="list"] {
+    display: none;
+}
+
+.ss-vehicle_image-hero .stock_cms-gallery-image,
+.ss-vehicle_image-secondary .stock_cms-gallery-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+}
