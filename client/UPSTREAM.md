@@ -41,7 +41,7 @@ The first commit that adds `client/` is the unchanged copy; the JM changes are i
 | Ebbett file | Why |
 |---|---|
 | `lib_photoswipe` | An unmodified PhotoSwipe 5.4.4, so it loads from `cdn.jsdelivr.net/npm/photoswipe@5.4.4` |
-| `cms_browse` | Runs the Algolia lists on offers, news and dealerships, which HNDRX rebuilds as native Webflow lists |
+| `cms_browse` | Ran the Algolia lists on offers, news and dealerships. HNDRX rebuilt them as native Webflow lists; its site-wide loader (BrowseEmbedDev) was removed from JM on 6 Nov 2026 |
 | `lib_algolia/dropdown.css` | Empty file |
 | `site-header.js` | Empty file on Ebbett's server |
 | `ev-range-footer.js` | Returns 404 on Ebbett's server |
