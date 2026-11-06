@@ -1,12 +1,13 @@
 // Applies algolia/stock.settings.json (primary `stock` index, incl. its virtual sort replicas),
-// algolia/stock.replicas.json (each replica's sort order) and algolia/pages.settings.json (the
-// nav search's site pages) to the JM Algolia app.
+// algolia/stock.replicas.json (each replica's sort order), algolia/pages.settings.json (the
+// nav search's site pages) and algolia/models.settings.json + models.replicas.json (the EV range
+// page's vehicle models) to the JM Algolia app.
 //
 //   node tools/algolia-settings.mjs                apply
 //   node tools/algolia-settings.mjs --check        compare live settings with the files, change nothing
 //   node tools/algolia-settings.mjs --only pages   either of the above, for one index
 //
-// The settings were copied from Ebbett's tuned `stock` index (Oct 2026). Needs
+// The settings were copied from Ebbett's tuned `stock` (Oct 2026) and `models` (6 Nov 2026) indices. Needs
 // JOHNSTON_ALGOLIA_APP_ID + JOHNSTON_ALGOLIA_ADMIN_API_KEY (environment or ../.env.local).
 import { readFile } from 'node:fs/promises';
 
@@ -50,7 +51,9 @@ const load = async (f) => JSON.parse(await readFile(new URL(`../algolia/${f}`, i
 const primary = await load('stock.settings.json');
 const replicas = await load('stock.replicas.json');
 const pages = await load('pages.settings.json');
-const targets = [['stock', primary], ...Object.entries(replicas), ['pages', pages]];
+const models = await load('models.settings.json');
+const modelReplicas = await load('models.replicas.json');
+const targets = [['stock', primary], ...Object.entries(replicas), ['pages', pages], ['models', models], ...Object.entries(modelReplicas)];
 
 for (const [index, wanted] of targets) {
   if (only && index !== only) continue;

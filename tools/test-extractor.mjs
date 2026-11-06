@@ -1,14 +1,16 @@
 // Runs crawler/stock.config.js's recordExtractor against the live site, without the Crawler.
 //
-//   node tools/test-extractor.mjs [siteOrigin]     (default: https://johnston-motors.webflow.io)
+//   node tools/test-extractor.mjs [siteOrigin]            stock (default: https://johnston-motors.webflow.io)
+//   node tools/test-extractor.mjs --models [siteOrigin]   the EV range page's `models` records
 //
-// Fetches every /inventory/ URL in the sitemap, extracts a record per page, checks each one has
-// exactly the Ebbett 3.0 `stock` record keys with the right value types, and writes the records
-// to out/records.json for a closer look.
+// Fetches every /inventory/ (or /model/) URL in the sitemap, extracts a record per page, checks each one
+// has exactly the Ebbett 3.0 `stock` (or `models`) record keys with the right value types, and writes the
+// records to out/records.json (out/models.json) for a closer look.
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import * as cheerio from 'cheerio';
 
-const ORIGIN = (process.argv[2] || 'https://johnston-motors.webflow.io').replace(/\/$/, '');
+const MODELS = process.argv.includes('--models');
+const ORIGIN = (process.argv.slice(2).find((a) => !a.startsWith('--')) || 'https://johnston-motors.webflow.io').replace(/\/$/, '');
 const CONCURRENCY = 4;
 
 // Key → allowed typeof values, from a live Ebbett `stock` record (2 Nov 2026).
@@ -30,6 +32,16 @@ const SHAPE = {
   is_pre_owned_promise: 'boolean', updatedAt: 'string', objectID: 'string',
 };
 
+// Key → allowed typeof values, from a live Ebbett `models` record (6 Nov 2026), minus Ebbett-only fields
+// (dealerships, description, created_on/updated_on).
+const MODEL_SHAPE = {
+  name: 'string', model: 'string|null', slug: 'string', vehicleBrand: 'string|null', price: 'number|null',
+  priceFormatted: 'string|null', priceDetail: 'string|null', fuelType: 'array', bodyType: 'array',
+  driveTrain: 'array', transmission: 'array', seats: 'array', engineSizes: 'array', mainImage: 'string|null',
+  url: 'string', openInNewTab: 'boolean', orderImportance: 'number|null', pageViews: 'number',
+  updatedAt: 'string', objectID: 'string',
+};
+
 const typeOf = (v) => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v);
 
 async function loadExtractor() {
@@ -37,12 +49,13 @@ async function loadExtractor() {
   let config;
   class Crawler { constructor(opts) { config = opts; } }
   new Function('Crawler', src)(Crawler);
-  return config.actions[0].recordExtractor;
+  return config.actions.find((a) => a.indexName === (MODELS ? 'models' : 'stock')).recordExtractor;
 }
 
 async function inventoryUrls() {
   const xml = await (await fetch(`${ORIGIN}/sitemap.xml`)).text();
-  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => u.includes('/inventory/'));
+  const part = MODELS ? '/model/' : '/inventory/';
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => u.includes(part));
 }
 
 async function pool(items, fn) {
@@ -56,7 +69,8 @@ async function pool(items, fn) {
 
 const extract = await loadExtractor();
 const urls = (await inventoryUrls()).map((u) => u.replace(/^https?:\/\/[^/]+/, ORIGIN));
-console.log(`${urls.length} vehicle URLs in ${ORIGIN}/sitemap.xml`);
+const SHAPE_USED = MODELS ? MODEL_SHAPE : SHAPE;
+console.log(`${urls.length} ${MODELS ? 'model' : 'vehicle'} URLs in ${ORIGIN}/sitemap.xml`);
 
 const results = await pool(urls, async (u) => {
   const res = await fetch(`${u}?cb=${Date.now()}`);
@@ -70,23 +84,23 @@ const problems = [];
 for (const r of results) {
   if (r.error) { problems.push(`${r.u}: ${r.error}`); continue; }
   const keys = Object.keys(r.record);
-  const missing = Object.keys(SHAPE).filter((k) => !keys.includes(k));
-  const extra = keys.filter((k) => !(k in SHAPE));
-  const badTypes = keys.filter((k) => k in SHAPE && !SHAPE[k].split('|').includes(typeOf(r.record[k])));
+  const missing = Object.keys(SHAPE_USED).filter((k) => !keys.includes(k));
+  const extra = keys.filter((k) => !(k in SHAPE_USED));
+  const badTypes = keys.filter((k) => k in SHAPE_USED && !SHAPE_USED[k].split('|').includes(typeOf(r.record[k])));
   if (missing.length || extra.length || badTypes.length) {
     problems.push(`${r.u}: missing [${missing}] extra [${extra}] bad types [${badTypes.map((k) => `${k}=${typeOf(r.record[k])}`)}]`);
   }
 }
 
-const empty = Object.fromEntries(Object.keys(SHAPE).map((k) => [k, 0]));
-for (const r of records) for (const k of Object.keys(SHAPE)) {
+const empty = Object.fromEntries(Object.keys(SHAPE_USED).map((k) => [k, 0]));
+for (const r of records) for (const k of Object.keys(SHAPE_USED)) {
   const v = r[k];
   if (v === null || v === '' || (Array.isArray(v) && !v.length)) empty[k] += 1;
 }
 const dupes = records.length - new Set(records.map((r) => r.objectID)).size;
 
 await mkdir(new URL('../out/', import.meta.url), { recursive: true });
-await writeFile(new URL('../out/records.json', import.meta.url), JSON.stringify(records, null, 2));
+await writeFile(new URL(`../out/${MODELS ? 'models' : 'records'}.json`, import.meta.url), JSON.stringify(records, null, 2));
 
 console.log(`${records.length} records, ${problems.length} problems, ${dupes} duplicate objectIDs`);
 problems.forEach((p) => console.log('  ✗', p));

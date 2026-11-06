@@ -10,7 +10,7 @@
 
 export const ALGOLIA = {
   appId: 'EMQLKN9FHC',
-  // Search-only key, limited to the stock (+ sort replicas) and pages indices and
+  // Search-only key, limited to the stock, pages and models indices (+ sort replicas) and
   // to JM's domains (johnston-motors.webflow.io, johnstonmotors.co.nz). Public
   // by design.
   searchKey: 'f8ff4a2393901b6f4a76262fc9a5beab',
@@ -21,6 +21,14 @@ export const ALGOLIA = {
 export const INDICES = {
   stock: 'stock',
   pages: 'pages',
+};
+
+// The EV range page's model search (cms_ev-range): JM's `models` index and its sort replicas,
+// built by the Algolia Crawler from JM's model pages. Not a nav-search category.
+export const MODEL_INDICES = {
+  priceAsc: 'models_price_asc',
+  priceDesc: 'models_price_desc',
+  popularity: 'models_popularity',
 };
 
 // Absolute URLs on these hosts are turned into on-site paths, so links never jump

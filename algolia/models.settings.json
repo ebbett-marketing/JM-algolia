@@ -1,0 +1,105 @@
+{
+  "minWordSizefor1Typo": 4,
+  "minWordSizefor2Typos": 8,
+  "hitsPerPage": 20,
+  "maxValuesPerFacet": 100,
+  "searchableAttributes": [
+    "bodyType",
+    "name",
+    "vehicleBrand",
+    "unordered(fuelType)",
+    "unordered(price)"
+  ],
+  "numericAttributesForFiltering": [
+    "seats",
+    "price"
+  ],
+  "ignorePlurals": [
+    "en"
+  ],
+  "advancedSyntax": true,
+  "removeStopWords": [
+    "en"
+  ],
+  "distinct": false,
+  "attributesForFaceting": [
+    "searchable(bodyType)",
+    "driveTrain",
+    "engineSizes",
+    "fuelType",
+    "model",
+    "searchable(price)",
+    "seats",
+    "transmission",
+    "searchable(vehicleBrand)"
+  ],
+  "paginationLimitedTo": 1000,
+  "exactOnSingleWordQuery": "attribute",
+  "synonyms": [
+    [
+      "EV",
+      "electric"
+    ],
+    [
+      "PHEV",
+      "plug-in hybrid",
+      "plugin hybrid",
+      "plug-in",
+      "plugin"
+    ],
+    [
+      "hev",
+      "hybrid"
+    ],
+    [
+      "station wagon",
+      "estate",
+      "avant",
+      "wagon",
+      "stationwagon"
+    ],
+    [
+      "hatch",
+      "hatchback"
+    ],
+    [
+      "van",
+      "people mover",
+      "mpv"
+    ],
+    [
+      "Chevrolet",
+      "chevy",
+      "GMSV"
+    ],
+    [
+      "ute",
+      " pickup",
+      "truck"
+    ]
+  ],
+  "ranking": [
+    "typo",
+    "geo",
+    "words",
+    "filters",
+    "proximity",
+    "attribute",
+    "exact",
+    "custom"
+  ],
+  "removeWordsIfNoResults": "none",
+  "queryType": "prefixLast",
+  "alternativesAsExact": [
+    "ignorePlurals",
+    "singleWordSynonym"
+  ],
+  "customRanking": [
+    "asc(orderImportance)"
+  ],
+  "replicas": [
+    "virtual(models_price_asc)",
+    "virtual(models_price_desc)",
+    "virtual(models_popularity)"
+  ]
+}

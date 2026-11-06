@@ -32,6 +32,7 @@ The first commit that adds `client/` is the unchanged copy; the JM changes are i
 | `cms_brands` | files.ebbett.co.nz `brands-footer.js` | `/brand/*` | same file |
 | `cms_vehicle-models` | core-edge `cms_vehicle-models/v1.0.0` (`footer-early.js`, `footer-late.js`) | `/model/*` | `files.ebbett.co.nz/…/vehicle-models-footer-first.js`, `-last.js` |
 | `lib_gmaps` | core-edge `lib_gmaps/v1.0.0` (`locator.js`) | `/service` | `files.ebbett.co.nz/…/google-maps-core.js` |
+| `cms_ev-range` | files.ebbett.co.nz `scripts/algolia/ev.js` → `search.js`, `widget-price-range.js` → `price-select.js`, `style.css` → `styles.css` (6 Nov 2026; dropdown from `lib_algolia`) | `/electric-vehicles/our-range-of-electric-cars` | `files.ebbett.co.nz/scripts/algolia/ev.js`, `style.css`, `dropdown.css` (empty) |
 
 `…` is `files.ebbett.co.nz/scripts/ebbett.co.nz`.
 
@@ -41,7 +42,6 @@ The first commit that adds `client/` is the unchanged copy; the JM changes are i
 |---|---|
 | `lib_photoswipe` | An unmodified PhotoSwipe 5.4.4, so it loads from `cdn.jsdelivr.net/npm/photoswipe@5.4.4` |
 | `cms_browse` | Runs the Algolia lists on offers, news and dealerships, which HNDRX rebuilds as native Webflow lists |
-| `cms_vehicle-models/search.js` (`files.ebbett.co.nz/scripts/algolia/ev.js`) | The EV range page searches Ebbett's `models` index, which JM doesn't have |
 | `lib_algolia/dropdown.css` | Empty file |
 | `site-header.js` | Empty file on Ebbett's server |
 | `ev-range-footer.js` | Returns 404 on Ebbett's server |

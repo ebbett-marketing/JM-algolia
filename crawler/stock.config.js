@@ -14,12 +14,12 @@ new Crawler({
   appId: 'EMQLKN9FHC',
   apiKey: 'SET_IN_DASHBOARD',
   rateLimit: 4,
-  maxUrls: 300, // ~75 cars today; the agreement sizes it for 100
+  maxUrls: 300, // ~75 cars + ~32 models today; the agreement sizes stock for 100
   // The plan enforces >= 23 h between scheduled crawls. 17:00 UTC = 6am NZDT (5am NZST).
   schedule: 'every 1 day at 5:00 pm',
   sitemaps: ['https://johnston-motors.webflow.io/sitemap.xml'],
   startUrls: [],
-  // Only vehicle pages are fetched: nothing outside pathsToMatch is discovered or crawled.
+  // Only vehicle and model pages are fetched: nothing outside pathsToMatch is discovered or crawled.
   discoveryPatterns: [],
   renderJavaScript: false,
   // Staging only: robots.txt disallows everything, and the canonicals still point at
@@ -155,6 +155,77 @@ new Crawler({
           is_pre_owned_promise: condition === 'Used' && /pre-owned promise/i.test(str(f.dealership_services) || ''),
           updatedAt: new Date().toISOString(),
           objectID,
+        }];
+      },
+    },
+    {
+      // EV range page (/electric-vehicles/our-range-of-electric-cars). Each model page carries a CMS-bound JSON
+      // block (<script id="wd-algolia-model">, Vehicle | Models template head). Records keep the shape of
+      // Ebbett's `models` index, which client/cms_ev-range/search.js was written for. Every published model is
+      // indexed; the page itself filters to EV and PHEV.
+      indexName: 'models',
+      pathsToMatch: ['https://johnston-motors.webflow.io/model/**'],
+      recordExtractor: ({ url, $, dataSources }) => {
+        const raw = $('script#wd-algolia-model').html();
+        if (!raw) return [];
+
+        let f;
+        try {
+          f = JSON.parse(raw.replace(/\\/g, '\\\\'));
+        } catch (e) {
+          return [];
+        }
+
+        const ENTITIES = { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>', nbsp: ' ' };
+        const str = (v) => {
+          const s = String(v == null ? '' : v)
+            .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => {
+              if (e[0] !== '#') return ENTITIES[e.toLowerCase()] || m;
+              const hex = e[1] === 'x' || e[1] === 'X';
+              return String.fromCodePoint(parseInt(e.slice(hex ? 2 : 1), hex ? 16 : 10));
+            })
+            .trim();
+          return s === '' ? null : s;
+        };
+        const num = (v) => {
+          const s = str(v);
+          if (s == null) return null;
+          const n = Number(s.replace(/[$,\s]/g, ''));
+          return Number.isFinite(n) ? n : null;
+        };
+        // Multi-value Webflow options read "Front-wheel Drive|All-wheel Drive"; Ebbett's records hold arrays.
+        const list = (v) => (str(v) || '').split('|').map((s) => s.trim()).filter(Boolean);
+
+        const slug = str(f.slug);
+        // "Proof - Hide model on site" models stay out of search.
+        if (!slug || str(f.hidden) === 'true') return [];
+
+        const price = num(f.price);
+        const ga4 = dataSources && dataSources.ga4;
+        const gaViews = ga4 ? num(ga4.screenPageViews) : null;
+
+        return [{
+          name: str(f.name),
+          model: str(f.model),
+          slug,
+          vehicleBrand: str(f.brand),
+          price,
+          priceFormatted: str(f.price_text) || (price == null ? null : '$' + String(Math.round(price)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')),
+          priceDetail: str(f.price_detail),
+          fuelType: list(f.fuel_type),
+          bodyType: list(f.body_type),
+          driveTrain: list(f.drivetrain),
+          transmission: list(f.transmission),
+          seats: list(f.seats).map(Number).filter(Number.isFinite),
+          engineSizes: list(f.engine_sizes),
+          mainImage: str(f.image),
+          // A path, so the records survive the domain switch (same as the stock records).
+          url: url.pathname,
+          openInNewTab: false,
+          orderImportance: num(f.order),
+          pageViews: gaViews != null ? gaViews : 0,
+          updatedAt: new Date().toISOString(),
+          objectID: slug,
         }];
       },
     },

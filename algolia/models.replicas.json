@@ -1,0 +1,21 @@
+{
+  "models_price_asc": {
+    "customRanking": [
+      "asc(price)"
+    ],
+    "relevancyStrictness": 30
+  },
+  "models_price_desc": {
+    "customRanking": [
+      "desc(price)"
+    ],
+    "relevancyStrictness": 30
+  },
+  "models_popularity": {
+    "customRanking": [
+      "desc(pageViews)",
+      "asc(orderImportance)"
+    ],
+    "relevancyStrictness": 70
+  }
+}

@@ -1,5 +1,13 @@
-import { createDropdown } from './dropdown.js';
-import { createPriceRangeWidget } from './widget-price-range.js';
+// EV range page (/electric-vehicles/our-range-of-electric-cars): search over Johnston Motors' vehicle models.
+//
+// Copy of Ebbett's files.ebbett.co.nz/scripts/algolia/ev.js (6 Nov 2026), which the page loaded until Ebbett's
+// server stopped serving it to JM (CORS). It now reads JM's own `models` index, which the Algolia Crawler builds
+// from JM's model pages (crawler/stock.config.js, action "models"), so the brands are JM's (BYD, Kia).
+// Changes from Ebbett's file, all marked [JM]: app, key and index names from config.js; Insights per config.js;
+// no Dealership filter (one dealership, so its box is hidden); the dropdown widget is lib_algolia's copy.
+import { ALGOLIA, MODEL_INDICES, INSIGHTS } from '../config.js';
+import { createDropdown } from '../lib_algolia/widgets/dropdown.js';
+import { createPriceRangeWidget } from './price-select.js';
 
 const WAIT_FOR_INSTANTSEARCH_MAX_ATTEMPTS = 100;
 const WAIT_FOR_INSTANTSEARCH_INTERVAL_MS = 100;
@@ -31,22 +39,20 @@ const instantsearch = window.instantsearch;
 const { clearRefinements } = instantsearch.widgets;
 const { stats } = instantsearch.widgets;
 
-const searchClient = algoliasearch(
-    'G2Y7I1BLJW',
-    'e54bd7c6bd9b6c2df13fe6615eca943d'
-);
+// [JM] JM's app and public search key.
+const searchClient = algoliasearch(ALGOLIA.appId, ALGOLIA.searchKey);
 
 const search = instantsearch({
     searchClient,
-    indexName: "models_price_asc",
+    indexName: MODEL_INDICES.priceAsc,
     routing: true,
-    insights: true
+    insights: INSIGHTS
 });
 
 let totalObjectsInIndex = 0;
 
 async function getObjectCount() {
-    const index = searchClient.initIndex('models_price_asc');
+    const index = searchClient.initIndex(MODEL_INDICES.priceAsc);
 
     try {
         const result = await index.search('', {
@@ -209,37 +215,7 @@ search.addWidgets([
 
         }
     }),
-    createDropdown(instantsearch.widgets.refinementList, {
-        closeOnChange: false,
-        buttonClassName: 'vs-filter-search w-select',
-        buttonText({ items }) {
-            const refinedItems = (items || []).filter(
-                item => item.label !== 'All' && item.isRefined
-            );
-            if (refinedItems.length === 1) {
-                return refinedItems[0].label.length > 22 
-                    ? "1 selected" 
-                    : refinedItems[0].label;
-            } else if (refinedItems.length > 1) {
-                return `${refinedItems.length} selected`;
-            } else {
-                return 'Select Dealership';
-            }
-        }
-    })({
-        container: '#ais_filter-dealership',
-        attribute: 'dealerships',
-        searchable: false,
-        sortRemainingBy: 'alpha',
-        limit: 50
-    }),
-    clearRefinements({
-        container: '#ais_filter-dealership-clear',
-        includedAttributes: ['dealerships'],
-        templates: {
-            resetLabel: 'x',
-        }
-    }),
+    // [JM] Ebbett's Dealership filter is gone: Johnston Motors is one dealership (box hidden below).
     
     createDropdown(instantsearch.widgets.refinementList, {
         closeOnChange: false,
@@ -302,9 +278,9 @@ search.addWidgets([
     instantsearch.widgets.sortBy({
         container: '#ais_sort-by',
         items: [
-            { label: 'Most popular models', value: 'models_popularity' },
-            { label: 'Lowest price', value: 'models_price_asc' },
-            { label: 'Highest price', value: 'models_price_desc' }
+            { label: 'Most popular models', value: MODEL_INDICES.popularity },
+            { label: 'Lowest price', value: MODEL_INDICES.priceAsc },
+            { label: 'Highest price', value: MODEL_INDICES.priceDesc }
         ],
         cssClasses: {
             select: 'select-field w-select'
@@ -399,6 +375,11 @@ search.on('render', function () {
     }
 
 });
+
+// [JM] Hide the Dealership filter's box (its widget is removed above).
+const dealershipFilter = document.querySelector('#ais_filter-dealership');
+const dealershipBox = dealershipFilter && dealershipFilter.closest('.ais_filter-wrapper');
+if (dealershipBox) dealershipBox.style.display = 'none';
 
 async function startSearch() {
     try {
