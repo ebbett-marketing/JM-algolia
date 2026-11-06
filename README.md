@@ -10,7 +10,7 @@ stock search, comparison and navigation search. Adapted from the Ebbett 3.0 site
 | `client/` | The site's scripts and styles, one folder per module, served via jsDelivr |
 | `client/config.js` | JM's settings for those scripts: Algolia app, search key, indices, domains |
 | `client/UPSTREAM.md` | Where each module came from and which pages load it |
-| `crawler/stock.config.js` | Algolia Crawler config for the `stock` index (dashboard-editor format) |
+| `crawler/stock.config.js` | Algolia Crawler config for the `stock` index and the EV range page's `models` index (dashboard-editor format) |
 | `algolia/stock.settings.json` | `stock` index settings, including its 10 sort replicas |
 | `algolia/stock.replicas.json` | Sort order for each replica |
 | `algolia/pages.settings.json` | `pages` index settings (site pages in the nav search) |
