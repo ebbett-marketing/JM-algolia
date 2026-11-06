@@ -287,6 +287,10 @@ new Crawler({
         // Page content only: the nav (incl. its pop-ups) and footer sit outside <main>.
         const scope = $('main').length ? $('main').first() : $('body');
         scope.find('script, style, noscript, svg').remove();
+        // A news post's or offer's own text sits outside collection lists; the lists on those templates are
+        // related cars and offers (an offer page lists ~20 cars), which made every offer match every car name.
+        // Site pages keep theirs: some (finance providers, community groups) are built from CMS lists.
+        if (category !== 'pages') scope.find('.w-dyn-list').remove();
         const headings = [];
         scope.find('h1, h2, h3').each((i, el) => {
           const h = clean($(el).text());
