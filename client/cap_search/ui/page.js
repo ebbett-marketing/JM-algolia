@@ -153,7 +153,7 @@ export function initPage(config, deps = {}) {
       input.setAttribute('data-wd-search-input', '');
       input.type = 'search';
       input.name = 'q';
-      input.placeholder = 'Search stock, models, offers, dealerships, news…';
+      input.placeholder = 'Search stock, models, offers, news…'; // [JM] no dealerships
       input.setAttribute('aria-label', 'Search');
       input.autocomplete = 'off';
       slot.appendChild(input);

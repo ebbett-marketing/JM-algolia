@@ -13,7 +13,7 @@ stock search, comparison and navigation search. Adapted from the Ebbett 3.0 site
 | `crawler/stock.config.js` | Algolia Crawler config for the `stock` index and the EV range page's `models` index (dashboard-editor format) |
 | `algolia/stock.settings.json` | `stock` index settings, including its 10 sort replicas |
 | `algolia/stock.replicas.json` | Sort order for each replica |
-| `algolia/pages.settings.json` | `pages` index settings (site pages in the nav search) |
+| `algolia/pages.settings.json` | `pages` index settings (site pages, news posts and offers in the nav search, by `category`) |
 | `tools/test-extractor.mjs` | Runs the crawler's record extractor against the live site, no Algolia needed |
 | `tools/crawler.mjs` | Pushes the crawler config, starts a crawl, shows status |
 | `tools/algolia-settings.mjs` | Applies (or `--check`s) the index settings |

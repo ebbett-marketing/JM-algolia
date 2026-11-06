@@ -112,15 +112,16 @@ export const ADAPTERS = {
       objectID: hit.objectID,
       category: 'offers',
       tag: LABELS.offers,
-      title: hit.name || hit.offerTitle || '',
+      // [JM] JM's offers are `pages` records (title/description/image), Ebbett's had their own index.
+      title: hit.name || hit.offerTitle || hit.title || '',
       url: relUrl(hit.url),
       external: false,
       // EM-420 (Alex, 2026-09-17): the card is 16:9 — prefer the "Thumbnail
       // alternative" field, then the 16:9 "current offers alternative", then
       // the square thumbnail, mobile tile and hero. Same chain as cms_browse.
-      image: offerImage(hit),
+      image: offerImage(hit) || hit.image || null,
       subtitle: null,
-      meta: hit.cardShortDescription || hit.shortDescription || null,
+      meta: hit.cardShortDescription || hit.shortDescription || hit.description || null,
       price: null,
     };
   },
@@ -133,9 +134,10 @@ export const ADAPTERS = {
       title: hit.title || '', // news titles live in `title`, not `name`
       url: relUrl(hit.url),
       external: false,
-      image: hit.mainImage || hit.thumbnail || null, // both nullable
+      // [JM] JM's news posts are `pages` records (image/description), Ebbett's had their own index.
+      image: hit.mainImage || hit.thumbnail || hit.image || null,
       subtitle: null,
-      meta: hit.summary || null,
+      meta: hit.summary || hit.description || null,
       price: null,
     };
   },

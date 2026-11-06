@@ -23,7 +23,7 @@ const DEFAULTS = {
   // lazy-injected UMD; skipped entirely when `searchClient` is stubbed
   algoliaCdn: 'https://cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js',
   searchClient: null, // harness stub hook
-  // stock + pages only on JM; categories without an index are not searched
+  // JM: stock, models, offers, news, pages (offers/news/pages share `pages`); no dealerships
   indices: { ...INDICES },
   // Webflow reserves /search for its native site search — the results page
   // lives at /site-search (slug renamed 2026-08-03)

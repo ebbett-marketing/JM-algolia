@@ -7,6 +7,7 @@
 // and a fixed order never reshuffles while typing.
 
 import { adapt, pagePath, LABELS } from './adapters.js';
+import { indexFor } from '../../config.js';
 
 export { LABELS };
 
@@ -59,7 +60,10 @@ export function buildRequests(query, opts = {}) {
     if (category === 'stock') params.filters = 'status:Active'; // index holds Sold/Pending too
     if (category === 'offers') params.numericFilters = ['endDate>' + now]; // expired offers linger between resyncs
     if (category === 'pages') { params.hitsPerPage = PAGES_FETCH; params.page = 0; }
-    return { indexName: indices[category] || category, params };
+    // [JM] an entry can be { index, filters }: news and offers share the `pages` index (config.js).
+    const entry = indices[category];
+    if (entry && entry.filters) params.filters = params.filters ? `(${params.filters}) AND (${entry.filters})` : entry.filters;
+    return { indexName: indexFor(entry) || category, params };
   });
 }
 
@@ -84,8 +88,8 @@ function pagesHygiene(hits) {
  */
 export async function runSearch(client, query, opts = {}) {
   const categories = opts.categories || CATEGORIES;
-  // JM: only categories with an index in config.indices are queried (stock and
-  // pages); a missing index would fail the whole multi-index request.
+  // JM: only categories with an index in config.indices are queried (all but
+  // dealerships); a missing index would fail the whole multi-index request.
   const indices = opts.indices || {};
   const searched = categories.filter((category) => indices[category]);
   const requests = searched.length ? buildRequests(query, { ...opts, categories: searched }) : [];

@@ -16,12 +16,23 @@ export const ALGOLIA = {
   searchKey: 'f8ff4a2393901b6f4a76262fc9a5beab',
 };
 
-// Index per nav-search category. A category left out is not searched: JM's nav
-// search covers stock and site pages only (D4).
+// Index per nav-search category (cap_search). A category left out is not searched and gets no
+// filter pill: JM has no dealerships category (its dealership pages are hidden). An entry is an
+// index name, or { index, filters } when several categories share one index: news posts and
+// offers sit in `pages` (built by the crawler's pages action), tagged by `category` (D4).
+// Other modules read INDICES.stock only.
 export const INDICES = {
   stock: 'stock',
-  pages: 'pages',
+  models: 'models',
+  offers: { index: 'pages', filters: 'category:offers' },
+  news: { index: 'pages', filters: 'category:news' },
+  pages: { index: 'pages', filters: 'category:pages' },
 };
+
+/** Index name for a nav-search category: INDICES entries are a name or { index, filters }. */
+export function indexFor(entry) {
+  return typeof entry === 'string' ? entry : (entry && entry.index) || '';
+}
 
 // The EV range page's model search (cms_ev-range): JM's `models` index and its sort replicas,
 // built by the Algolia Crawler from JM's model pages. Not a nav-search category.

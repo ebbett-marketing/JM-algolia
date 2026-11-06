@@ -6,12 +6,16 @@
     "body",
     "path"
   ],
+  "attributesForFaceting": [
+    "filterOnly(category)"
+  ],
   "attributesToRetrieve": [
     "title",
     "description",
     "url",
     "path",
-    "image"
+    "image",
+    "category"
   ],
   "attributesToHighlight": [
     "title"

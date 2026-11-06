@@ -231,10 +231,11 @@ new Crawler({
       },
     },
     {
-      // Nav search + /site-search "Pages" results. Port of Ebbett's pages crawler (ebbett-agents
-      // 04-algolia/src/transforms/pages.js): one record per site page, objectID = path. CMS detail pages
-      // are left out (cars and models have their own indices; news/offers/dealership hits are dropped by
-      // cap_search anyway); the top-level /news and /offers listing pages stay.
+      // Nav search + /site-search: site pages, news posts and offers, one record per page, objectID = path.
+      // Port of Ebbett's pages crawler (ebbett-agents 04-algolia/src/transforms/pages.js). Ebbett keeps news
+      // and offers in their own indices; JM keeps them here, tagged by `category` ('pages', 'news' or
+      // 'offers'), and cap_search filters on it (client/config.js INDICES). Cars, models and dealership
+      // pages are left out (the first two have their own indices; JM's dealership pages are hidden).
       indexName: 'pages',
       pathsToMatch: [
         'https://johnston-motors.webflow.io',
@@ -242,14 +243,12 @@ new Crawler({
         '!https://johnston-motors.webflow.io/inventory/**',
         '!https://johnston-motors.webflow.io/product/**',
         '!https://johnston-motors.webflow.io/stock/**',
-        '!https://johnston-motors.webflow.io/news/**',
-        '!https://johnston-motors.webflow.io/offers/**',
         '!https://johnston-motors.webflow.io/model/**',
         '!https://johnston-motors.webflow.io/dealership/**',
       ],
       recordExtractor: ({ url, $ }) => {
         const path = (url.pathname.replace(/\/+$/, '') || '/');
-        const EXCLUDE_PREFIXES = ['/inventory/', '/product/', '/stock/', '/news/', '/offers/', '/model/', '/dealership/'];
+        const EXCLUDE_PREFIXES = ['/inventory/', '/product/', '/stock/', '/model/', '/dealership/'];
         const EXCLUDE_EXACT = [
           '/access-denied', '/checkout', '/paypal-checkout', '/order-confirmation', '/log-in', '/sign-up',
           '/reset-password', '/update-password', '/user-account', '/site-search', '/search', '/untitled',
@@ -262,7 +261,27 @@ new Crawler({
         if (/noindex|noidex/i.test(robots)) return [];
 
         const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
-        const title = clean($('title').first().text());
+        const segs = path.split('/').filter(Boolean);
+        // A news post or an offer (the /news and /offers listing pages themselves are 'pages').
+        const category = segs.length > 1 && (segs[0] === 'news' || segs[0] === 'offers') ? segs[0] : 'pages';
+
+        // An offer's Offer JSON-LD (D6, Offers template) has its short name, description and end date.
+        // Webflow writes the CMS text into it HTML-escaped ("Trade-In &amp; Upgrade").
+        const unescape = (v) => $('<i></i>').html(String(v || '')).text();
+        let offer = null;
+        if (category === 'offers') {
+          $('script[type="application/ld+json"]').each((i, el) => {
+            if (offer) return;
+            try {
+              const data = JSON.parse($(el).html());
+              const nodes = [].concat(data['@graph'] || data);
+              offer = nodes.find((n) => n && n['@type'] === 'Offer') || null;
+            } catch (e) { /* a bad block is skipped */ }
+          });
+        }
+
+        // "Kia EV5 Roadshow | Johnston Motors" → "Kia EV5 Roadshow".
+        const title = clean((offer && unescape(offer.name)) || $('title').first().text()).replace(/\s+[|–-]\s+Johnston Motors$/i, '');
         if (!title) return [];
 
         // Page content only: the nav (incl. its pop-ups) and footer sit outside <main>.
@@ -274,20 +293,27 @@ new Crawler({
           if (h && !headings.includes(h)) headings.push(h);
         });
         const meta = (k) => $(`meta[name="${k}"]`).attr('content') || $(`meta[property="${k}"]`).attr('content') || '';
-        const segs = path.split('/').filter(Boolean);
+        // cap_search hides an offer once endDate (ms) has passed, as on Ebbett. validThrough is a date:
+        // the offer runs to the end of that day, NZ time. No end date = always shown.
+        let endDate = null;
+        if (category === 'offers') {
+          const end = offer && /^\d{4}-\d{2}-\d{2}$/.test(offer.validThrough || '') ? Date.parse(`${offer.validThrough}T23:59:59+13:00`) : NaN;
+          endDate = Number.isFinite(end) ? end : 4102444800000; // 2100-01-01
+        }
 
         return [{
           objectID: path,
-          category: 'pages',
+          category,
           path,
           // A path, like the stock and model records, so they survive the domain switch.
           url: path,
           title,
-          description: clean(meta('description') || meta('og:description')) || null,
+          description: clean(meta('description') || meta('og:description') || (offer && unescape(offer.description))) || null,
           image: meta('og:image') || null,
           headings,
           body: clean(scope.text()).slice(0, 6000),
           pageType: segs.length > 1 ? segs[0] : 'general',
+          endDate,
           updatedAt: new Date().toISOString(),
         }];
       },

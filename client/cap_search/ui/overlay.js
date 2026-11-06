@@ -55,7 +55,7 @@ export function initOverlay(config, deps = {}) {
       input.className = 'wd-search_input';
       input.setAttribute('data-wd-search-input', '');
       input.type = 'search';
-      input.placeholder = 'Search stock, models, offers, dealerships, news…';
+      input.placeholder = 'Search stock, models, offers, news…'; // [JM] no dealerships
       input.setAttribute('aria-label', 'Search');
       input.autocomplete = 'off';
       slot.appendChild(input);
@@ -131,11 +131,14 @@ export function initOverlay(config, deps = {}) {
     );
   }
 
+  // [JM] a pill only for a category the site searches (config.indices): JM has no dealerships.
+  const filterOrder = FILTER_ORDER.filter((c) => config.indices && config.indices[c]);
+
   function renderFilterPills(result) {
     const holder = overlay.querySelector('[data-wd-search-filter-pills]');
     if (!holder) return;
     holder.textContent = '';
-    for (const category of FILTER_ORDER) {
+    for (const category of filterOrder) {
       const count = result[category].nbHits;
       const pill = registry.clone('filter-pill');
       fill(pill, { label: LABELS[category], count: String(count) });

@@ -50,7 +50,7 @@ const MODEL_SHAPE = {
 const PAGE_SHAPE = {
   objectID: 'string', category: 'string', path: 'string', url: 'string', title: 'string',
   description: 'string|null', image: 'string|null', headings: 'array', body: 'string', pageType: 'string',
-  updatedAt: 'string',
+  endDate: 'number|null', updatedAt: 'string',
 };
 
 const typeOf = (v) => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v);
@@ -66,7 +66,7 @@ async function loadExtractor() {
 async function inventoryUrls() {
   const xml = await (await fetch(`${ORIGIN}/sitemap.xml`)).text();
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  if (PAGES) return locs.filter((u) => !/\/(inventory|model|news|offers|dealership|stock|product)\//.test(u));
+  if (PAGES) return locs.filter((u) => !/\/(inventory|model|dealership|stock|product)\//.test(u));
   const part = MODELS ? '/model/' : '/inventory/';
   return locs.filter((u) => u.includes(part));
 }
