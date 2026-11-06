@@ -2,14 +2,18 @@
 //
 //   node tools/test-extractor.mjs [siteOrigin]            stock (default: https://johnston-motors.webflow.io)
 //   node tools/test-extractor.mjs --models [siteOrigin]   the EV range page's `models` records
+//   node tools/test-extractor.mjs --pages [siteOrigin]    the nav search's `pages` records
 //
-// Fetches every /inventory/ (or /model/) URL in the sitemap, extracts a record per page, checks each one
-// has exactly the Ebbett 3.0 `stock` (or `models`) record keys with the right value types, and writes the
-// records to out/records.json (out/models.json) for a closer look.
+// Fetches the sitemap URLs for that index (/inventory/, /model/, or everything else), extracts a record per
+// page, checks each one has exactly the expected record keys with the right value types, and writes the
+// records to out/records.json (out/models.json, out/pages.json) for a closer look. A page the pages action
+// deliberately skips (CMS detail pages, utility pages, noindex) counts as skipped, not as a problem.
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import * as cheerio from 'cheerio';
 
 const MODELS = process.argv.includes('--models');
+const PAGES = process.argv.includes('--pages');
+const INDEX = MODELS ? 'models' : PAGES ? 'pages' : 'stock';
 const ORIGIN = (process.argv.slice(2).find((a) => !a.startsWith('--')) || 'https://johnston-motors.webflow.io').replace(/\/$/, '');
 const CONCURRENCY = 4;
 
@@ -42,6 +46,13 @@ const MODEL_SHAPE = {
   updatedAt: 'string', objectID: 'string',
 };
 
+// The record contract of Ebbett's pages crawler (04-algolia src/transforms/pages.js), which cap_search reads.
+const PAGE_SHAPE = {
+  objectID: 'string', category: 'string', path: 'string', url: 'string', title: 'string',
+  description: 'string|null', image: 'string|null', headings: 'array', body: 'string', pageType: 'string',
+  updatedAt: 'string',
+};
+
 const typeOf = (v) => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v);
 
 async function loadExtractor() {
@@ -49,13 +60,15 @@ async function loadExtractor() {
   let config;
   class Crawler { constructor(opts) { config = opts; } }
   new Function('Crawler', src)(Crawler);
-  return config.actions.find((a) => a.indexName === (MODELS ? 'models' : 'stock')).recordExtractor;
+  return config.actions.find((a) => a.indexName === INDEX).recordExtractor;
 }
 
 async function inventoryUrls() {
   const xml = await (await fetch(`${ORIGIN}/sitemap.xml`)).text();
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  if (PAGES) return locs.filter((u) => !/\/(inventory|model|news|offers|dealership|stock|product)\//.test(u));
   const part = MODELS ? '/model/' : '/inventory/';
-  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => u.includes(part));
+  return locs.filter((u) => u.includes(part));
 }
 
 async function pool(items, fn) {
@@ -69,19 +82,21 @@ async function pool(items, fn) {
 
 const extract = await loadExtractor();
 const urls = (await inventoryUrls()).map((u) => u.replace(/^https?:\/\/[^/]+/, ORIGIN));
-const SHAPE_USED = MODELS ? MODEL_SHAPE : SHAPE;
-console.log(`${urls.length} ${MODELS ? 'model' : 'vehicle'} URLs in ${ORIGIN}/sitemap.xml`);
+const SHAPE_USED = MODELS ? MODEL_SHAPE : PAGES ? PAGE_SHAPE : SHAPE;
+console.log(`${urls.length} ${INDEX} URLs in ${ORIGIN}/sitemap.xml`);
 
 const results = await pool(urls, async (u) => {
   const res = await fetch(`${u}?cb=${Date.now()}`);
   if (!res.ok) return { u, error: `HTTP ${res.status}` };
   const records = extract({ url: new URL(u), $: cheerio.load(await res.text()), dataSources: {} });
+  if (!records.length && PAGES) return { u, skipped: true };
   return records.length ? { u, record: records[0] } : { u, error: 'no record (block missing or invalid JSON)' };
 });
 
 const records = results.filter((r) => r.record).map((r) => r.record);
 const problems = [];
 for (const r of results) {
+  if (r.skipped) continue;
   if (r.error) { problems.push(`${r.u}: ${r.error}`); continue; }
   const keys = Object.keys(r.record);
   const missing = Object.keys(SHAPE_USED).filter((k) => !keys.includes(k));
@@ -100,7 +115,9 @@ for (const r of records) for (const k of Object.keys(SHAPE_USED)) {
 const dupes = records.length - new Set(records.map((r) => r.objectID)).size;
 
 await mkdir(new URL('../out/', import.meta.url), { recursive: true });
-await writeFile(new URL(`../out/${MODELS ? 'models' : 'records'}.json`, import.meta.url), JSON.stringify(records, null, 2));
+await writeFile(new URL(`../out/${INDEX === 'stock' ? 'records' : INDEX}.json`, import.meta.url), JSON.stringify(records, null, 2));
+const skipped = results.filter((r) => r.skipped).map((r) => new URL(r.u).pathname);
+if (skipped.length) console.log(`Skipped by the extractor (${skipped.length}): ${skipped.join(' ')}`);
 
 console.log(`${records.length} records, ${problems.length} problems, ${dupes} duplicate objectIDs`);
 problems.forEach((p) => console.log('  ✗', p));

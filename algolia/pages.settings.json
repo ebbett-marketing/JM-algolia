@@ -1,9 +1,27 @@
 {
-  "searchableAttributes": ["unordered(title)", "unordered(description)", "content"],
-  "attributesToRetrieve": ["title", "description", "url", "path", "image"],
-  "attributesToHighlight": ["title"],
-  "queryLanguages": ["en"],
-  "indexLanguages": ["en"],
+  "searchableAttributes": [
+    "title",
+    "headings",
+    "description",
+    "body",
+    "path"
+  ],
+  "attributesToRetrieve": [
+    "title",
+    "description",
+    "url",
+    "path",
+    "image"
+  ],
+  "attributesToHighlight": [
+    "title"
+  ],
+  "queryLanguages": [
+    "en"
+  ],
+  "indexLanguages": [
+    "en"
+  ],
   "ignorePlurals": true,
   "removeStopWords": true
 }

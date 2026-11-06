@@ -14,12 +14,13 @@ new Crawler({
   appId: 'EMQLKN9FHC',
   apiKey: 'SET_IN_DASHBOARD',
   rateLimit: 4,
-  maxUrls: 300, // ~75 cars + ~32 models today; the agreement sizes stock for 100
+  maxUrls: 300, // ~75 cars + ~32 models + ~34 site pages today; the agreement sizes stock for 100
   // The plan enforces >= 23 h between scheduled crawls. 17:00 UTC = 6am NZDT (5am NZST).
   schedule: 'every 1 day at 5:00 pm',
   sitemaps: ['https://johnston-motors.webflow.io/sitemap.xml'],
   startUrls: [],
-  // Only vehicle and model pages are fetched: nothing outside pathsToMatch is discovered or crawled.
+  // Only URLs some action's pathsToMatch accepts are fetched (cars, models, site pages); nothing is discovered
+  // beyond the sitemap.
   discoveryPatterns: [],
   renderJavaScript: false,
   // Staging only: robots.txt disallows everything, and the canonicals still point at
@@ -226,6 +227,68 @@ new Crawler({
           pageViews: gaViews != null ? gaViews : 0,
           updatedAt: new Date().toISOString(),
           objectID: slug,
+        }];
+      },
+    },
+    {
+      // Nav search + /site-search "Pages" results. Port of Ebbett's pages crawler (ebbett-agents
+      // 04-algolia/src/transforms/pages.js): one record per site page, objectID = path. CMS detail pages
+      // are left out (cars and models have their own indices; news/offers/dealership hits are dropped by
+      // cap_search anyway); the top-level /news and /offers listing pages stay.
+      indexName: 'pages',
+      pathsToMatch: [
+        'https://johnston-motors.webflow.io',
+        'https://johnston-motors.webflow.io/**',
+        '!https://johnston-motors.webflow.io/inventory/**',
+        '!https://johnston-motors.webflow.io/product/**',
+        '!https://johnston-motors.webflow.io/stock/**',
+        '!https://johnston-motors.webflow.io/news/**',
+        '!https://johnston-motors.webflow.io/offers/**',
+        '!https://johnston-motors.webflow.io/model/**',
+        '!https://johnston-motors.webflow.io/dealership/**',
+      ],
+      recordExtractor: ({ url, $ }) => {
+        const path = (url.pathname.replace(/\/+$/, '') || '/');
+        const EXCLUDE_PREFIXES = ['/inventory/', '/product/', '/stock/', '/news/', '/offers/', '/model/', '/dealership/'];
+        const EXCLUDE_EXACT = [
+          '/access-denied', '/checkout', '/paypal-checkout', '/order-confirmation', '/log-in', '/sign-up',
+          '/reset-password', '/update-password', '/user-account', '/site-search', '/search', '/untitled',
+          '/test', // JM staging test page
+        ];
+        if (EXCLUDE_EXACT.includes(path) || EXCLUDE_PREFIXES.some((p) => path.startsWith(p))) return [];
+
+        // noindex pages stay out (plus the "noidex" typo seen in Ebbett's CMS data).
+        const robots = $('meta[name="robots"]').attr('content') || '';
+        if (/noindex|noidex/i.test(robots)) return [];
+
+        const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+        const title = clean($('title').first().text());
+        if (!title) return [];
+
+        // Page content only: the nav (incl. its pop-ups) and footer sit outside <main>.
+        const scope = $('main').length ? $('main').first() : $('body');
+        scope.find('script, style, noscript, svg').remove();
+        const headings = [];
+        scope.find('h1, h2, h3').each((i, el) => {
+          const h = clean($(el).text());
+          if (h && !headings.includes(h)) headings.push(h);
+        });
+        const meta = (k) => $(`meta[name="${k}"]`).attr('content') || $(`meta[property="${k}"]`).attr('content') || '';
+        const segs = path.split('/').filter(Boolean);
+
+        return [{
+          objectID: path,
+          category: 'pages',
+          path,
+          // A path, like the stock and model records, so they survive the domain switch.
+          url: path,
+          title,
+          description: clean(meta('description') || meta('og:description')) || null,
+          image: meta('og:image') || null,
+          headings,
+          body: clean(scope.text()).slice(0, 6000),
+          pageType: segs.length > 1 ? segs[0] : 'general',
+          updatedAt: new Date().toISOString(),
         }];
       },
     },
