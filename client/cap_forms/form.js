@@ -1,10 +1,10 @@
 // --- 1. UPLOADER CONFIGURATION ---
 // This initializes the uploader service.
-// JM: still Ebbett's Bytescale (upload.io) account and /ebbett.co.nz/ folder below.
-// Valuation and trade-in photo uploads are Ebbett Group's call (open, Nov 2026).
+// JM's own Bytescale (upload.io) account since 11 Nov 2026 (public key, browser-side by design).
+// Same key, folder and colour as the inline uploader on /value-my-vehicle, /model/* and /valuation/*.
 try {
   $.uploader.init({
-    apiKey: "public_W142i2G27rvDuqs2EeqkBiKNyYg3"
+    apiKey: "public_W23MTjr3CSN79te2wSU1BCJZVtwy"
   });
 } catch (e) {
   console.error("Uploader init failed. Is jQuery or uploader script missing?", e);
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
       editor: { images: { preview: false, crop: false } },
       path: {
         fileName: "{UTC_YEAR}-{UTC_MONTH}-{UTC_DAY}-{UNIQUE_DIGITS_10}{ORIGINAL_FILE_EXT}",
-        folderPath: "/ebbett.co.nz/valuation/{UTC_YEAR}/{UTC_MONTH}/{UTC_DAY}"
+        folderPath: "/johnstonmotors.co.nz/valuation/{UTC_YEAR}/{UTC_MONTH}/{UTC_DAY}"
       },
-      styles: { colors: { primary: "#C4161C" } },
+      styles: { colors: { primary: "#000000" } },
       onUpdate: files => {
         if (files.length === 0) {
           console.log('No files selected.');
